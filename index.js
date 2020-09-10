@@ -124,6 +124,35 @@ app.patch('/items/:id', (req, res)=>{
         })
     }
 })
+app.delete('/items:id', (req, res)=>{
+    let {id} = req.param
+    id = parseInt(id)
+    const {name, price, description} = req.body
+    if(name && price && description){
+        if (name && price && description) {
+            db.query(`delete from items where id = '${id}'`, (error, result, fields) => {
+                if(!err){
+                    res.status(201).send({
+                        success: true,
+                        message: 'Item was deleted successfully',
+                        data: req.body
+                    })
+                } else {
+                    console.log(err);
+                    res.status(500).send({
+                        success: false,
+                        message: 'Internal Server error'
+                    });
+                }
+            })
+        }
+    }else{
+        res.status(400).send({
+            success: false,
+            message: 'All field must be filled!'
+        })
+    }
+})
 
 // MENGAMBIL SEMUA DATABASE mysql YANG TELAH DI UPDATE TADI
 app.get('/items', (req, res) => {
