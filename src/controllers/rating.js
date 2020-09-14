@@ -1,37 +1,37 @@
 const qs = require('querystring')
 
-const { getItemModel, createItemModel, getItemsIdModel, getItemIdModel3, updateItemModel, updatePartialItemModel, deleteItemModel } = require('../models/items')
+const { getDetailRatingModel, createRatingModel, getRatingModel, getRatingModelData, updateRatingModel, deleteProductModel } = require('../models/rating')
 
 module.exports = {
-  getDetailItem: (req, res) => {
-    const { id } = req.params
+  getDetailRating: (req, res) => {
+    const { rating_id } = req.params
     console.log(req.params)
-    getItemModel(id, (result) => {
+    getDetailRatingModel(id, (result) => {
       // console.log(result)
       if (result.length) {
         res.send({
           success: true,
-          message: `Item with id ${id}`,
+          message: `Rating with id ${rating_id}`,
           data: result[0]
         })
       } else {
         res.send({
           success: false,
-          message: 'Data not found!'
+          message: 'Rating not found!'
         })
       }
     })
   },
-  createItem: (req, res) => {
-    const { name, price, description } = req.body
-    if (name && price && description) {
-      createItemModel([name, price, description], (err, result) => {
+  createRating: (req, res) => {
+    const { rating_total } = req.body
+    if (rating_total) {
+      createRatingModel(rating_total, (err, result) => {
         if (!err) {
           res.status(201).send({
             success: true,
-            message: 'Item has been created',
+            message: 'Rating has been created',
             data: {
-              id: result.insertId,
+              rating_id: result.insertId,
               ...req.body
             }
           })
@@ -50,16 +50,27 @@ module.exports = {
       })
     }
   },
-  getItems: (req, res) => {
-    let { page, limit, search } = req.query
+  getRating: (req, res) => {
+    const { id } = req.params
+    let { page, limit, search, orderBy } = req.query
     let searchKey = ''
     let searchValue = ''
+    let orderByKey = ''
+    let orderByValue = ''
+    console.log(search)
     if (typeof search === 'object') {
       searchKey = Object.keys(search)[0]
       searchValue = Object.values(search)[0]
     } else {
-      searchKey = 'name'
+      searchKey = 'Rating_id'
       searchValue = search || ''
+    }
+    if (typeof orderBy === 'object'){
+      orderByKey = Object.keys(orderBy)[0]
+      orderByValue = Object.values(orderBy)[0]
+    } else {
+      orderByKey = 'Rating_id'
+      orderByValue = orderBy || 'ASC'
     }
 
     if (!limit) {
@@ -74,7 +85,7 @@ module.exports = {
     }
     const offset = (page - 1) * limit
 
-    getItemsIdModel([searchKey, searchValue, limit, offset], (err, result) => {
+    getRatingModel([searchKey, searchValue, limit, offset, orderByKey, orderByValue], (err, result) => {
       if (!err) {
         // untuk pagination
         const pageInfo = {
@@ -86,7 +97,7 @@ module.exports = {
           prevLink: null
         }
         if (result.length) {
-          getItemIdModel3((data) => {
+            getRatingModelData((data) => {
             const { count } = data[0]
             pageInfo.count = count
             pageInfo.pages = Math.ceil(count / limit)
@@ -94,16 +105,16 @@ module.exports = {
             const { pages, currentPage } = pageInfo
             console.log(req.query)
             if (currentPage < pages) {
-              pageInfo.nextLink = `http://localhost:8080/items?${qs.stringify({ ...req.query, ...{ page: page + 1 } })}`
+              pageInfo.nextLink = `http://localhost:8080/rating?${qs.stringify({ ...req.query, ...{ page: page + 1 } })}`
             }
 
             if (currentPage > 1) {
-              pageInfo.prevLink = `http://localhost:8080/items?${qs.stringify({ ...req.query, ...{ page: page - 1 } })}`
+              pageInfo.prevLink = `http://localhost:8080/rating?${qs.stringify({ ...req.query, ...{ page: page - 1 } })}`
             }
 
             res.send({
               success: true,
-              message: 'List of items',
+              message: 'List of Rating',
               data: result,
               pageInfo
             })
@@ -115,6 +126,7 @@ module.exports = {
           })
         }
       } else {
+        console.log(err)
         res.status(500).send({
           success: false,
           message: 'Internal Server error'
@@ -122,23 +134,23 @@ module.exports = {
       }
     })
   },
-  updateItem: (req, res) => {
-    let { id } = req.params
-    id = Number(id)
-    const { name = '', price = '', description = '' } = req.body
-    if (name.trim() && price.trim() && description.trim()) {
-      updateItemModel([name, price, description], id, (err, result) => {
+  updateRating: (req, res) => {
+    let { rating_id } = req.params
+    rating_id = Number(rating_id)
+    const { rating_total = '' } = req.body
+    if (rating_total.trim()) {
+        updateRatingModel(rating_total, (err, result) => {
         console.log(err)
         if (!err) {
           if (result.affectedRows && result.warningCount === 0) { // untuk mengecek apakah price nya sebuah angka pake warningCount
             res.send({
               success: true,
-              message: `Item with id ${id} Has been updated!`
+              message: `Rating with id ${rating_id} Has been updated!`
             })
           } else if (!result.affectedRows) {
             res.send({
               success: false,
-              message: `id ${id} not found!`
+              message: `Category ${rating_id} not found!`
             })
           } else {
             res.send({
@@ -160,27 +172,27 @@ module.exports = {
       })
     }
   },
-  updatePartialItem: (req, res) => {
-    let { id } = req.params
-    id = Number(id)
-    const { name = '', price = '', description = '' } = req.body
-    if (name.trim() || price.trim() || description.trim()) {
+  updatePartialRating: (req, res) => {
+    let { rating_id } = req.params
+    rating_id = Number(rating_id)
+    const { rating_total = '' } = req.body
+    if (rating_total.trim()) {
       const data = Object.entries(req.body).map(element => {
         return parseInt(element[1]) > 0 ? `${element[0]}=${element[1]}` : `${element[0]}='${element[1]}'`
       })
       console.log(data)
-      updatePartialItemModel([id, data], (err, result) => {
+      updatePartialRating([data, rating_id], (err, result) => {
         console.log(result)
         if (!err) {
           if (result.affectedRows && result.warningCount === 0) { // untuk mengecek result.warningCount === 0 jika warningCount nya tidak sama dengan 0, apakah price nya sebuah angka pake warningCount
             res.send({
               success: true,
-              message: `Item with id ${id} Has been updated!`
+              message: `Category with id ${rating_id} Has been updated!`
             })
           } else if (!result.affectedRows) {
             res.send({
               success: false,
-              message: `id ${id} not found!`
+              message: `id ${rating_id} not found!`
             })
           } else {
             res.send({
@@ -202,25 +214,25 @@ module.exports = {
       })
     }
   },
-  deleteItem: (req, res) => {
-    const { id } = req.params
-    deleteItemModel(id, (err, result) => {
+  deleteRating: (req, res) => {
+    const { rating_id } = req.params
+    deleteRatingModel(rating_id, (err, result) => {
       console.log(err)
       if (!err) {
         if (result.affectedRows) {
           res.send({
             success: true,
-            message: `Item with id ${id} Has been deleted!`
+            message: `Category with id ${rating_id} Has been deleted!`
           })
         } else if (!result.affectedRows) {
           res.send({
             success: false,
-            message: `id ${id} not found!`
+            message: `id ${rating_id} not found!`
           })
         } else {
           res.send({
             success: false,
-            message: 'Failed to delete item!'
+            message: 'Failed to delete product!'
           })
         }
       } else if (err) {

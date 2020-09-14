@@ -1,37 +1,37 @@
 const qs = require('querystring')
 
-const { getItemModel, createItemModel, getItemsIdModel, getItemIdModel3, updateItemModel, updatePartialItemModel, deleteItemModel } = require('../models/items')
+const { getDetailCategoryModel, createCategoryModel, getCategoryModel, getCategoryModelData, updateCategoryModel, updatePartialModel, deleteProductModel } = require('../models/category')
 
 module.exports = {
-  getDetailItem: (req, res) => {
+  getDetailCategory: (req, res) => {
     const { id } = req.params
     console.log(req.params)
-    getItemModel(id, (result) => {
+    getDetailCategoryModel(id, (err, result) => {
       // console.log(result)
-      if (result.length) {
+      if (!err) {
         res.send({
           success: true,
-          message: `Item with id ${id}`,
+          message: `Category with id ${id}`,
           data: result[0]
         })
       } else {
         res.send({
           success: false,
-          message: 'Data not found!'
+          message: 'Category not found!'
         })
       }
     })
   },
-  createItem: (req, res) => {
-    const { name, price, description } = req.body
-    if (name && price && description) {
-      createItemModel([name, price, description], (err, result) => {
+  createCategory: (req, res) => {
+    const { category_name } = req.body
+    if (category_name) {
+      createCategoryModel(category_name, (err, result) => {
         if (!err) {
           res.status(201).send({
             success: true,
-            message: 'Item has been created',
+            message: 'Category has been created',
             data: {
-              id: result.insertId,
+              category_id: result.insertId,
               ...req.body
             }
           })
@@ -50,16 +50,27 @@ module.exports = {
       })
     }
   },
-  getItems: (req, res) => {
-    let { page, limit, search } = req.query
+  getCategory: (req, res) => {
+    const { id } = req.params
+    let { page, limit, search, orderBy } = req.query
     let searchKey = ''
     let searchValue = ''
+    let orderByKey = ''
+    let orderByValue = ''
+    console.log(search)
     if (typeof search === 'object') {
       searchKey = Object.keys(search)[0]
       searchValue = Object.values(search)[0]
     } else {
-      searchKey = 'name'
+      searchKey = 'category_id'
       searchValue = search || ''
+    }
+    if (typeof orderBy === 'object'){
+      orderByKey = Object.keys(orderBy)[0]
+      orderByValue = Object.values(orderBy)[0]
+    } else {
+      orderByKey = 'category_id'
+      orderByValue = orderBy || 'ASC'
     }
 
     if (!limit) {
@@ -74,7 +85,7 @@ module.exports = {
     }
     const offset = (page - 1) * limit
 
-    getItemsIdModel([searchKey, searchValue, limit, offset], (err, result) => {
+    getCategoryModel([searchKey, searchValue, limit, offset, orderByKey, orderByValue], (err, result) => {
       if (!err) {
         // untuk pagination
         const pageInfo = {
@@ -86,7 +97,7 @@ module.exports = {
           prevLink: null
         }
         if (result.length) {
-          getItemIdModel3((data) => {
+            getCategoryModelData((data) => {
             const { count } = data[0]
             pageInfo.count = count
             pageInfo.pages = Math.ceil(count / limit)
@@ -94,16 +105,16 @@ module.exports = {
             const { pages, currentPage } = pageInfo
             console.log(req.query)
             if (currentPage < pages) {
-              pageInfo.nextLink = `http://localhost:8080/items?${qs.stringify({ ...req.query, ...{ page: page + 1 } })}`
+              pageInfo.nextLink = `http://localhost:8080/category?${qs.stringify({ ...req.query, ...{ page: page + 1 } })}`
             }
 
             if (currentPage > 1) {
-              pageInfo.prevLink = `http://localhost:8080/items?${qs.stringify({ ...req.query, ...{ page: page - 1 } })}`
+              pageInfo.prevLink = `http://localhost:8080/category?${qs.stringify({ ...req.query, ...{ page: page - 1 } })}`
             }
 
             res.send({
               success: true,
-              message: 'List of items',
+              message: 'List of Category',
               data: result,
               pageInfo
             })
@@ -115,6 +126,7 @@ module.exports = {
           })
         }
       } else {
+        console.log(err)
         res.status(500).send({
           success: false,
           message: 'Internal Server error'
@@ -122,23 +134,23 @@ module.exports = {
       }
     })
   },
-  updateItem: (req, res) => {
-    let { id } = req.params
-    id = Number(id)
-    const { name = '', price = '', description = '' } = req.body
-    if (name.trim() && price.trim() && description.trim()) {
-      updateItemModel([name, price, description], id, (err, result) => {
+  updateCategory: (req, res) => {
+    let { category_id } = req.params
+    category_id = Number(category_id)
+    const { category_name = '' } = req.body
+    if (category_name.trim()) {
+        updateCategoryModel(category_name, (err, result) => {
         console.log(err)
         if (!err) {
           if (result.affectedRows && result.warningCount === 0) { // untuk mengecek apakah price nya sebuah angka pake warningCount
             res.send({
               success: true,
-              message: `Item with id ${id} Has been updated!`
+              message: `Category with id ${category_id} Has been updated!`
             })
           } else if (!result.affectedRows) {
             res.send({
               success: false,
-              message: `id ${id} not found!`
+              message: `Category ${category_id} not found!`
             })
           } else {
             res.send({
@@ -160,27 +172,27 @@ module.exports = {
       })
     }
   },
-  updatePartialItem: (req, res) => {
-    let { id } = req.params
-    id = Number(id)
-    const { name = '', price = '', description = '' } = req.body
-    if (name.trim() || price.trim() || description.trim()) {
+  updatePartialCategory: (req, res) => {
+    let { category_id } = req.params
+    category_id = Number(category_id)
+    const { category_name = '' } = req.body
+    if (category_name.trim()) {
       const data = Object.entries(req.body).map(element => {
         return parseInt(element[1]) > 0 ? `${element[0]}=${element[1]}` : `${element[0]}='${element[1]}'`
       })
       console.log(data)
-      updatePartialItemModel([id, data], (err, result) => {
+      updatePartialModel([data, category_id], (err, result) => {
         console.log(result)
         if (!err) {
           if (result.affectedRows && result.warningCount === 0) { // untuk mengecek result.warningCount === 0 jika warningCount nya tidak sama dengan 0, apakah price nya sebuah angka pake warningCount
             res.send({
               success: true,
-              message: `Item with id ${id} Has been updated!`
+              message: `Category with id ${category_id} Has been updated!`
             })
           } else if (!result.affectedRows) {
             res.send({
               success: false,
-              message: `id ${id} not found!`
+              message: `id ${category_id} not found!`
             })
           } else {
             res.send({
@@ -202,25 +214,25 @@ module.exports = {
       })
     }
   },
-  deleteItem: (req, res) => {
-    const { id } = req.params
-    deleteItemModel(id, (err, result) => {
+  deleteCategory: (req, res) => {
+    const { category_id } = req.params
+    deleteProductModel(category_id, (err, result) => {
       console.log(err)
       if (!err) {
         if (result.affectedRows) {
           res.send({
             success: true,
-            message: `Item with id ${id} Has been deleted!`
+            message: `Category with id ${category_id} Has been deleted!`
           })
         } else if (!result.affectedRows) {
           res.send({
             success: false,
-            message: `id ${id} not found!`
+            message: `id ${category_id} not found!`
           })
         } else {
           res.send({
             success: false,
-            message: 'Failed to delete item!'
+            message: 'Failed to delete product!'
           })
         }
       } else if (err) {
