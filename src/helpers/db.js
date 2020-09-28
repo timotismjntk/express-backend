@@ -1,12 +1,17 @@
 const mysql = require('mysql')
 
-const conn = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: '',
-  database: 'ecommerce'
-})
+const {
+  DB_HOST,
+  DB_USER,
+  DB_PASSWORD,
+  DB_NAME
+} = process.env
 
-conn.connect()
+const options = {
+  host: DB_HOST,
+  user: DB_USER,
+  password: DB_PASSWORD,
+  database: DB_NAME
+}
 
-module.exports = conn
+module.exports = mysql.createConnection(options)
