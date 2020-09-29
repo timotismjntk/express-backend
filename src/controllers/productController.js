@@ -36,7 +36,8 @@ module.exports = {
         price: joi.number().required(),
         description: joi.string().required(),
         condition_id: joi.number().required(),
-        category_id: joi.string().required()
+        category_id: joi.string().required(),
+        rating_id: joi.number().required()
       })
 
       let { value: results, error } = schema.validate(req.body)
@@ -64,13 +65,14 @@ module.exports = {
       price: joi.number().required(),
       description: joi.string().required(),
       condition_id: joi.number().required(),
-      category_id: joi.string().required()
+      category_id: joi.string().required(),
+      rating_id: joi.number().required()
     })
     let { value: results, error } = schema.validate(req.body)
     if (error) {
         return responseStandard(res, 'Error', {error: error.message}, 400, false)
     }else {
-      let { name, quantity, price, description, condition_id, category_id } = results
+      // let { name, quantity, price, description, condition_id, category_id } = results
       const update = await productModel.updateProduct(results, id)
       // console.log(results)
       if(update.affectedRows) {
@@ -89,16 +91,17 @@ module.exports = {
       price: joi.number(),
       description: joi.string(),
       condition_id: joi.number(),
-      category_id: joi.number()
+      category_id: joi.number(),
+      rating_id: joi.number()
     })
     let { value: results, error } = schema.validate(req.body)
     if (error) {
         return responseStandard(res, 'Error', {error: error.message}, 400, false)
     } else {
         
-    let { name, quantity, price, description, condition_id, category_id } = results
+    let { name, quantity, price, description, condition_id, category_id, rating_id } = results
         id = Number(id)
-        if (name || quantity || price || description || condition_id || category_id){
+        if (name || quantity || price || description || condition_id || category_id || rating_id){
             const update = await productModel.updateProductPartial(results, id )
             if(update.affectedRows) {
                 return responseStandard(res, `Product Has been Updated`, {})
