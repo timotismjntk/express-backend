@@ -24,23 +24,30 @@ module.exports = {
             phone_number: joi.string().required(),
             address: joi.string().required()
         })
-
+        
         let { value: results, error } = schema.validate(req.body)
         if (error) {
             return responseStandard(res, 'Error', {error: error.message}, 400, false)
         } else {
+            console.log(req)
+            if(req.user.role_id != 1) { // untuk mengeset role_id agar yang bukan admin tidak bisa mengatur sendiri
+                results = {
+                    ...results,
+                    role_id: 3
+                }
+            }
             const { email } = results
             const isExist = await userModel.getUserByCondition({ email })
             // console.log(isExist)
             if (isExist.length > 0) {
                 return responseStandard(res, 'Email already used', {}, 401, false)
             } else {
-                // console.log(req.body)
+                console.log(req.file)
                 if(!req.file) {
                     return responseStandard(res, 'Invalid file type. Only image files are allowed.', {}, 500,)
                 } else {
                     if(req.file.size >= 5000) {
-                        return responseStandard(res, 'maximum allowed image size is 500 KB', {}, 500,)
+                        return responseStandard(res, 'maximum allowed file size 500 KB', {}, 500,)
                     }
                 }
                 const salt = await bcrypt.genSalt(10)   // untuk generate salt
@@ -81,6 +88,13 @@ module.exports = {
         if (error) {
             return responseStandard(res, 'Error', {error: error.message}, 400, false)
         } else {
+            if(!req.file) {
+                return responseStandard(res, 'Invalid file type. Only image files are allowed.', {}, 500,)
+            } else {
+                if(req.file.size >= 5000) {
+                    return responseStandard(res, 'maximum allowed file size 500 KB', {}, 500,)
+                }
+            }
             let picture = `${APP_URL}uploads/${req.file.filename}`
             let { role_id, name, email, password, phone_number, address  } = results
             // const salt = await bcrypt.genSalt(10)   // untuk generate salt
@@ -89,13 +103,6 @@ module.exports = {
             console.log(hashedPassword)
             const update = await userModel.updateUser({role_id, name, email, password: hashedPassword, phone_number, address, profile_picture: picture}, id )
             // console.log(results)
-            if(!req.file) {
-                    return responseStandard(res, 'Invalid file type. Only image files are allowed.', {}, 500,)
-                } else {
-                    if(req.file.size >= 5000) {
-                        return responseStandard(res, 'maximum allowed image file size is 500 KB', {}, 500,)
-                    }
-                }
             if(update.affectedRows) {
                 return responseStandard(res, `User Has been Updated`, {})
             } else {
@@ -121,6 +128,14 @@ module.exports = {
             
         let { role_id, name, email, password, phone_number, address } = results
             role_id = Number(role_id)
+            if(!req.file) {
+                return responseStandard(res, 'Invalid file type. Only image files are allowed.', {}, 500,)
+            } else {
+                if(req.file.size >= 5000) {
+                    return responseStandard(res, 'maximum allowed file size 500 KB', {}, 500,)
+                }
+            }
+            let picture = `${APP_URL}uploads/${req.file.filename}`
             
             if (password) {
                 const salt = await bcrypt.genSalt(10)   // untuk generate salt
@@ -138,7 +153,7 @@ module.exports = {
                 } else {
                     return responseStandard(res, 'User Not found', {}, 401, false)
                 }
-            } else if (role_id || name || email || phone_number || address){
+            } else if (role_id || name || email || phone_number || address || {profile_picture: picture}){
                 results = {
                     ...results,
                     password: undefined
@@ -169,8 +184,8 @@ module.exports = {
         const { id } = req.params
         let uid  = Number(id)
         // console.log(uid)
-        const userId = await userModel.deleteUser({id: uid})
-        if(userId.affectedRows){
+        const delUser = await userModel.deleteUser({id: uid})
+        if(delUser.affectedRows){
             return responseStandard(res, `User Has been deleted`, {})
         } else {
             return responseStandard(res, 'User Not found', {}, 401, false)
