@@ -1,12 +1,12 @@
 const { Router } = require('express')
 const {
-    read, 
-    create,
-    getNewProduct, 
-    getProductId,
-    updateProduct,
-    updateProductPartial,
-    deleteProduct
+  read,
+  create,
+  getNewProduct,
+  getProductId,
+  updateProduct,
+  updateProductPartial,
+  deleteProduct
 } = require('../controllers/productController')
 
 // const authMiddleware = require('../middleware/auth')
@@ -17,9 +17,6 @@ const router = Router()
 // "id": 1,
 // "name": "Super Admin",
 // "description": "Responsible to manage roles",
-
-
-
 
 router.get('/', read)
 router.get('/new/', getNewProduct)
