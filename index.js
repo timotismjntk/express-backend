@@ -24,7 +24,6 @@ const authMiddleware = require('./src/middleware/auth')
 const itemsRouter = require('./src/routes/items')
 const ratingRouter = require('./src/routes/rating')
 const newItemRouter = require('./src/routes/new_item')
-const popularRouter = require('./src/routes/popular')
 const userRouter = require('./src/routes/User')
 const cartRouter = require('./src/routes/cart')
 const authRouter = require('./src/routes/auth')
@@ -39,7 +38,6 @@ app.use('/uploads', express.static('assets/uploads'))   // untuk bisa diakses se
 // middleware custom routes
 app.use('/items', itemsRouter)
 app.use('/new_item', newItemRouter)
-app.use('/popular', popularRouter)
 app.use('/auth', authRouter)
 app.use('/user', userRouter)
 app.use('/customer', authMiddleware.authUser, customerRouter)
@@ -56,6 +54,8 @@ const manageProduct = require('./src/routes/manageProduct')
 const manageCondition = require('./src/routes/manageCondition')
 const manageCategory = require('./src/routes/manageCategory')
 const newProduct = require('./src/routes/newProductRoutes')
+const popularProduct = require('./src/routes/popular')
+const colorProduct = require('./src/routes/productColor')
 
 // Define Routes for manage
 app.use('/manage/roles', authMiddleware.authUser, manageRoles)
@@ -65,15 +65,14 @@ app.use('/manage/condition', manageCondition)
 app.use('/manage/category', manageCategory)
 app.use('/new/product', newProduct)
 app.use('/rating', ratingRouter)
+app.use('/popular/product', popularProduct)
+app.use('/color/product', colorProduct)
+
 
 // Error 404 Pages
 app.get('*', (req, res) => {
   responseStandard(res, 'Route Not Found', {}, 404, false)
 })
-
-
-
-
 
 
 
