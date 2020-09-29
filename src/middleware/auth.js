@@ -28,10 +28,23 @@ module.exports = {
     },
     authRole: (role) => {       // authentication to access admin page
         return (req, res, next) => {
-            console.log(req)
+            // // console.log(req.user)
+            // const listRole = [ 1, 2, 3 ]
+            // let index = listRole.indexOf(role)
+            // if (listRole[index] === 1) {
+            //     let user = 'Super Admin'
+            // } else if (listRole[index] === 2) {
+            //     let user = 'Seller'
+            // } else if (listRole[index] === 3) {
+            //     let user = 'General User'
+            // }
+            
             if (req.user.role_id !== role) {
-                return responseStandard(res, 'Not Have Access', {}, 401, false)
-            }
+                return responseStandard(res, 'You dont Have Access', {}, 401, false)
+            } 
+
+            console.log(role)
+            
             next();
         }
     }
