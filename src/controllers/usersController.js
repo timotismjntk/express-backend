@@ -15,68 +15,9 @@ module.exports = {
         const results = await userModel.readUsers([limit, offset])
         return responseStandard(res, 'List of Users', {results, pageInfo})
     },
-    create: async(req, res) => {
-        const schema = joi.object({
-            role_id: joi.string().required(),
-            name: joi.string().required(),
-            email: joi.string().required(),
-            password: joi.string().required(),
-            phone_number: joi.string().required(),
-            address: joi.string().required()
-        })
-        
-        let { value: results, error } = schema.validate(req.body)
-        if (error) {
-            return responseStandard(res, 'Error', {error: error.message}, 400, false)
-        } else {
-            console.log(req)
-            if(req.user.role_id != 1) { // untuk mengeset role_id agar yang bukan admin tidak bisa mengatur sendiri
-                results = {
-                    ...results,
-                    role_id: 3
-                }
-            }
-            const { email } = results
-            const isExist = await userModel.getUserByCondition({ email })
-            // console.log(isExist)
-            if (isExist.length > 0) {
-                return responseStandard(res, 'Email already used', {}, 401, false)
-            } else {
-                console.log(req.file)
-                if(!req.file) {
-                    return responseStandard(res, 'Invalid file type. Only image files are allowed.', {}, 500,)
-                } else {
-                    if(req.file.size >= 5000) {
-                        return responseStandard(res, 'maximum allowed file size 500 KB', {}, 500,)
-                    }
-                }
-                const salt = await bcrypt.genSalt(10)   // untuk generate salt
-                const hashedPassword = await bcrypt.hash(results.password, salt)    //untuk membuat hash password
-                let picture = `${APP_URL}uploads/${req.file.filename}`
-                results = {
-                    ...results,
-                    password: hashedPassword,
-                    profile_picture: picture
-                }
-                const data = await userModel.createUser(results)
-                if (data.affectedRows) {
-                    results = {
-                        id: data.insertId,
-                        ...results,
-                        password: undefined // untuk membuat password tidak ditampilkan atau agar tidak dilihat oleh user
-                    }
-                    return responseStandard(res, 'Create User Successfully', { results }, 200, true)
-                } else {
-                    return responseStandard(res, 'Failed to create user', {}, 401, false)
-                }
-            }
-        }
-    },
     updateUser: async (req, res) => {
-        let { id } = req.params
-        id = Number(id)
+        let id = req.user.id
         const schema = joi.object({
-            role_id: joi.string().required(),
             name: joi.string().required(),
             email: joi.string().required(),
             password: joi.string().required(),
@@ -96,12 +37,16 @@ module.exports = {
                 }
             }
             let picture = `${APP_URL}uploads/${req.file.filename}`
-            let { role_id, name, email, password, phone_number, address  } = results
             // const salt = await bcrypt.genSalt(10)   // untuk generate salt
             const hashedPassword = await bcrypt.hash(results.password, 10) //untuk membuat hash password
-            role_id = Number(role_id)
+            // role_id = Number(role_id)
+            results = {
+                ...results,
+                password: hashedPassword,
+                profile_picture: picture
+            }
             console.log(hashedPassword)
-            const update = await userModel.updateUser({role_id, name, email, password: hashedPassword, phone_number, address, profile_picture: picture}, id )
+            const update = await userModel.updateUser(results, id )
             // console.log(results)
             if(update.affectedRows) {
                 return responseStandard(res, `User Has been Updated`, {})
@@ -114,7 +59,6 @@ module.exports = {
         let { id } = req.params
         id = Number(id)
         const schema = joi.object({
-            role_id: joi.string(),
             name: joi.string(),
             email: joi.string(),
             password: joi.string(),
