@@ -42,9 +42,7 @@ module.exports = {
             if (req.user.role_id !== role) {
                 return responseStandard(res, 'You dont Have Access', {}, 401, false)
             } 
-
             console.log(role)
-            
             next();
         }
     }
