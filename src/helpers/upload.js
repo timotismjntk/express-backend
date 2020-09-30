@@ -1,9 +1,10 @@
 const responseStandard = require('../helpers/response')
 const multer = require('multer')
-
+const upload = multer()
 // const options = {
 //     dest: 'assets/uploads'
 // }
+
 
 const storage = multer.diskStorage({
     destination: (req, file, cb)=>{
@@ -15,32 +16,39 @@ const storage = multer.diskStorage({
         // console.log(ext)
         const fileName = `${req.user.id}_${new Date().getTime().toString().concat('.').concat(ext)}`
         cb(null, fileName)
+    },
+    isNull: (req, file, cb)=> {
+        // console.log(file.length)
+        if ([file].length === 0) {
+            return cb(null, false);
+        } else if([file].length > 4) {
+            return cb(null, false);
+        }
     }
 })
 
+    
+
 let fileFilter = (req, file, cb) => {
-    var allowedMimes = ['image/jpeg', 'image/jpg', 'image/png'];
-    // console.log(req.body)
-    // const cekFile = file.originalname
-    // console.log(file)
+    console.log(req.files.length === 3)
+    var allowedMimes = ['image/jpeg', 'image/jpg', 'image/png', 'image/PNG'];
+    // console.log(req.files.length === req.files[0].fieldname.length)
+    if (req.files.length === 5) {
+        file.fieldname = 'changed'
+        const fieldname = file.fieldname
+        console.log('berubah')
+        return cb(null, fieldname)
+    }
     // console.log(cekFile.slice(cekFile.indexOf('.'), cekFile.length))
      if (allowedMimes.includes(file.mimetype)) {
         return cb(null, true)
      } 
      else if (!(allowedMimes.includes(file.mimetype))) {
-        return cb(null, false);
+        file.mimetype = 'error'
+        const mimetype = file.mimetype
+        return cb(null, mimetype);
      }
-
-    //  if (req)
-
-
-
-// let sizeFilter = (req, file, cb)=> {
-//     if(file.size <= 500000 ) {
-//         return cb(null, true);
-//     } else {
-//         return cb(null, false);
-//     }
 }
 
-module.exports = multer({storage, fileFilter})
+
+module.exports = multer({storage, fileFilter}).array('picture', 4)
