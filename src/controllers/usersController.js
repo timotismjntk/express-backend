@@ -22,28 +22,48 @@ module.exports = {
             email: joi.string().required(),
             password: joi.string().required(),
             phone_number: joi.string().required(),
-            address: joi.string().required()
+            // address: joi.string().required()
         })
 
         let { value: results, error } = schema.validate(req.body)
         if (error) {
             return responseStandard(res, 'Error', {error: error.message}, 400, false)
         } else {
-            if(!req.file) {
-                return responseStandard(res, 'Invalid file type. Only image files are allowed.', {}, 500,)
-            } else {
-                if(req.file.size >= 5000) {
-                    return responseStandard(res, 'maximum allowed file size 500 KB', {}, 500,)
+            if(req.files.length === 0) {
+                return responseStandard(res, 'Images cannot be empty', {}, 500, false)
+            }
+            if (req.files[0].fieldname) {
+                console.log('true')
+            }
+
+            for (let i = 0; i < req.files.length; i++) {
+                if (req.files[i].mimetype === 'error') {
+                    console.log('true')
+                    return responseStandard(res, 'Invalid file type. Only image files are allowed.', {}, 500, false)
+                } else {
+                    if(req.files[i].size >= 50000) {
+                        console.log('true')
+                        return responseStandard(res, 'maximum allowed file size 500 KB', {}, 500, false)
+                    }
                 }
             }
-            let picture = `${APP_URL}uploads/${req.file.filename}`
+            // let {profile_picture} = req.body
+            let url = ''
+            for (let x = 0; x < req.files.length; x++) {
+                    let picture = `${APP_URL}uploads/${req.files[x].filename}`
+                    url += picture
+                }
+            console.log(url)
+            results = {
+            ...results,
+            profile_picture: url
+            }
             // const salt = await bcrypt.genSalt(10)   // untuk generate salt
             const hashedPassword = await bcrypt.hash(results.password, 10) //untuk membuat hash password
             // role_id = Number(role_id)
             results = {
                 ...results,
-                password: hashedPassword,
-                profile_picture: picture
+                password: hashedPassword
             }
             console.log(hashedPassword)
             const update = await userModel.updateUser(results, id )
@@ -56,59 +76,87 @@ module.exports = {
         }
     },
     updateUserPartial: async (req, res) => {
-        let { id } = req.params
+        let { id } = req.user
         id = Number(id)
         const schema = joi.object({
             name: joi.string(),
             email: joi.string(),
             password: joi.string(),
-            phone_number: joi.string(),
-            address: joi.string()
+            phone_number: joi.string()
         })
         let { value: results, error } = schema.validate(req.body)
         if (error) {
             return responseStandard(res, 'Error', {error: error.message}, 400, false)
         } else {
             
-        let { role_id, name, email, password, phone_number, address } = results
-            role_id = Number(role_id)
-            if(!req.file) {
-                return responseStandard(res, 'Invalid file type. Only image files are allowed.', {}, 500,)
-            } else {
-                if(req.file.size >= 5000) {
-                    return responseStandard(res, 'maximum allowed file size 500 KB', {}, 500,)
-                }
-            }
-            let picture = `${APP_URL}uploads/${req.file.filename}`
-            
+        let { name, email, password, phone_number } = results
             if (password) {
                 const salt = await bcrypt.genSalt(10)   // untuk generate salt
                 const hashedPassword = await bcrypt.hash(results.password, salt) //untuk membuat hash password
                 results = {
                     password: hashedPassword
                 }
+                
                 console.log(results)
                 // console.log(Object.values(results.split('')))
                 const update = await userModel.updateUserPartial(results, id )
                 // console.log(update)
                 // console.log(results)
                 if(update.affectedRows) {
-                    return responseStandard(res, `User Has been Updated`, {})
+                    return responseStandard(res, `User Has been Updated`, {results})
                 } else {
                     return responseStandard(res, 'User Not found', {}, 401, false)
                 }
-            } else if (role_id || name || email || phone_number || address || {profile_picture: picture}){
-                results = {
+            } else if (name || email || phone_number || req.files){
+                // results = {
+                //     ...results,
+                //     password: undefined
+                // }
+                // if (req.files[0].fieldname) {
+                //     console.log('true')
+                // }
+        
+                if(req.files.length === 0) {
+                    console.log(req.files)
+                    const update = await userModel.updateUserPartial(results, id)
+                    console.log('tanpa')
+                    if(update.affectedRows) {
+                        return responseStandard(res, `User Has been Updated`, {results})
+                    } else {
+                        return responseStandard(res, 'User Not found', {}, 401, false)
+                    }
+                } else if (req.files) {
+                    for (let i = 0; i < req.files.length; i++) {
+                        if (req.files[i].mimetype === 'error') {
+                            console.log('true')
+                            return responseStandard(res, 'Invalid file type. Only image files are allowed.', {}, 500, false)
+                        } else {
+                            if(req.files[i].size >= 500000) {
+                                console.log('true')
+                                return responseStandard(res, 'maximum allowed file size 500 KB', {}, 500, false)
+                            }
+                        }
+                    }
+                    
+                    let url = ''
+                    for (let x = 0; x < req.files.length; x++) {
+                            let picture = `${APP_URL}uploads/${req.files[x].filename}`
+                            url += picture
+                        }
+                        console.log(url)
+                    results = {
                     ...results,
-                    password: undefined
-                }
-                const update = await userModel.updateUserPartial(results, id )
-                // console.log(update)
-                // console.log(results)
-                if(update.affectedRows) {
-                    return responseStandard(res, `User Has been Updated`, {})
-                } else {
-                    return responseStandard(res, 'User Not found', {}, 401, false)
+                    profile_picture: url
+                    }
+                    const update = await userModel.updateUserPartial(results, id)
+                    
+                    // console.log(update)
+                    // console.log(results)
+                    if(update.affectedRows) {
+                        return responseStandard(res, `User Has been Updated`, {results})
+                    } else {
+                        return responseStandard(res, 'User Not found', {}, 401, false)
+                    }
                 }
             } else {
                 return responseStandard(res, 'At least fill one column!', '', 400, false)

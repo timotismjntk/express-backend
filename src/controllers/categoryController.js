@@ -5,7 +5,7 @@ const paging = require('../helpers/pagination')
 const categoryModel = require('../models/categoryModel')
 
 module.exports = {
-  read: async (req, res) => {
+  readCategory: async (req, res) => {
     const count = await categoryModel.countCategory()
     const page = paging(req, count)
     const { offset, pageInfo } = page
@@ -16,7 +16,7 @@ module.exports = {
   create: async(req, res) => {
     const schema = joi.object({
       picture: joi.string().required(),
-      name: joi.string().required(),
+      category_name: joi.string().required(),
       description: joi.string().required()
     })
 
@@ -41,14 +41,14 @@ module.exports = {
     id = Number(id)
     const schema = joi.object({
       picture: joi.string().required(),
-      name: joi.string().required(),
+      category_name: joi.string().required(),
       description: joi.string().required()
     })
     let { value: results, error } = schema.validate(req.body)
     if (error) {
         return responseStandard(res, 'Error', {error: error.message}, 400, false)
     }else {
-      let { picture, name, price, description } = results
+      let { picture, category_name, description } = results
       const update = await categoryModel.updateCategory(results, id)
       if(update.affectedRows) {
           return responseStandard(res, `Category Has been Updated`, {})
@@ -62,7 +62,7 @@ module.exports = {
     id = Number(id)
     const schema = joi.object({
       picture: joi.string(),
-      name: joi.string(),
+      category_name: joi.string(),
       description: joi.string()
     })
     let { value: results, error } = schema.validate(req.body)
@@ -72,7 +72,7 @@ module.exports = {
         
     let { picture, name, price, description } = results
         id = Number(id)
-        if (picture || name || description) {
+        if (picture || category_name || description) {
             const update = await categoryModel.updateCategoryPartial(results, id )
             if(update.affectedRows) {
                 return responseStandard(res, `Category Has been Updated`, {})

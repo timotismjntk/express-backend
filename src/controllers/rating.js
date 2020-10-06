@@ -5,7 +5,7 @@ const paging = require('../helpers/pagination')
 const ratingModel = require('../models/rating')
 
 module.exports = {
-  read: async (req, res) => {
+  readRating: async (req, res) => {
     const count = await ratingModel.countRating()
     let { search, orderBy } = req.query
     const page = paging(req, count)
@@ -15,7 +15,7 @@ module.exports = {
         searchKey = Object.keys(search)[0]
         searchValue = Object.values(search)[0]
       } else {
-        searchKey = 'name'
+        searchKey = 'description'
         searchValue = search || ''
       }
     if (typeof orderBy === 'object') {
@@ -31,8 +31,8 @@ module.exports = {
   },
   create: async(req, res) => {
       const schema = joi.object({
-        name: joi.string().required(),
-        description: joi.string().required()
+        rating: joi.number().required(),
+        description: joi.string()
       })
 
       let { value: results, error } = schema.validate(req.body)
@@ -55,8 +55,8 @@ module.exports = {
     let { id } = req.params
     id = Number(id)
     const schema = joi.object({
-      name: joi.string().required(),
-      description: joi.string().required()
+        rating: joi.number().required(),
+        description: joi.string()
     })
     let { value: results, error } = schema.validate(req.body)
     if (error) {
@@ -76,8 +76,8 @@ module.exports = {
     let { id } = req.params
     id = Number(id)
     const schema = joi.object({
-      name: joi.string(),
-      description: joi.string()
+        rating: joi.number(),
+        description: joi.string()
     })
     let { value: results, error } = schema.validate(req.body)
     if (error) {

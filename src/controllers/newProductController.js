@@ -5,7 +5,7 @@ const paging = require('../helpers/pagination')
 const NewProductModel = require('../models/NewProductModel')
 
 module.exports = {
-  read: async (req, res) => {
+  readNew: async (req, res) => {
     const count = await NewProductModel.countNewProduct()
     let { search, orderBy } = req.query
     const page = paging(req, count)

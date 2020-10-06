@@ -5,6 +5,7 @@ const paging = require('../helpers/pagination')
 const productModel = require('../models/productModel')
 
 module.exports = {
+
   read: async (req, res) => {
     const count = await productModel.countProduct()
     let { search, orderBy } = req.query
@@ -29,6 +30,7 @@ module.exports = {
     console.log(results)
     return responseStandard(res, 'List of Product', {results, pageInfo})
   },
+
   create: async(req, res) => {
       const schema = joi.object({
         name: joi.string().required(),
@@ -56,6 +58,7 @@ module.exports = {
               }
       }
   },
+
   updateProduct: async(req, res) => {
     let { id } = req.params
     id = Number(id)
@@ -82,6 +85,7 @@ module.exports = {
       }
     }
   },
+
   updateProductPartial: async (req, res) => {
     let { id } = req.params
     id = Number(id)
@@ -113,6 +117,7 @@ module.exports = {
         }
     }
 },
+
   getProductId: async (req, res) => {
       const { id } = req.params
       const data = await productModel.getProductByCondition({ id })
@@ -122,6 +127,16 @@ module.exports = {
           return responseStandard(res, 'Product Not found', {}, 401, false)
       }
   },
+  getDetailProduct: async (req, res) => {
+    const { id } = req.params
+    const data = await productModel.getProductDetail({ id })
+    if(data.length > 0) {
+        return responseStandard(res, `Product with Id ${id}`, {data})
+    } else {
+        return responseStandard(res, 'Product Not found', {}, 401, false)
+    }
+  }
+  ,
   getNewProduct: async (req, res) => {
     const count = await productModel.countProduct()
     let { id } = req.params
@@ -152,6 +167,7 @@ module.exports = {
         return responseStandard(res, 'New Product Not found', {}, 401, false)
     }
   },
+  
   deleteProduct: async (req, res) => {
       const { id } = req.params
       let productId  = Number(id)

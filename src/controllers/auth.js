@@ -29,7 +29,7 @@ module.exports = {
                         console.log('condition ', mail)
                         if(result) {
                             jwt.sign({role_id: role, email: mail, id: uid}, process.env.CUST_SECRET_KEY, {expiresIn: 1511}, (err, token)=>{
-                                return responseStandard(res, `Token ${token}`)
+                                return responseStandard(res, token)
                             }) 
                         }
                         else {
@@ -50,8 +50,7 @@ module.exports = {
             name: joi.string().required(),
             email: joi.string().required(),
             password: joi.string().required(),
-            phone_number: joi.string().required(),
-            address: joi.string().required()
+            phone_number: joi.string().required()
         })
         
         let { value: results, error } = schema.validate(req.body)
@@ -72,7 +71,7 @@ module.exports = {
                     ...results,
                     role_id: 3,
                     password: hashedPassword,
-                    profile_picture: "https://ui-avatars.com/api/?size=256&name=" + name
+                    // profile_picture: "https://ui-avatars.com/api/?size=256&name=" + name
                 }
                 const data = await userModel.createUser(results)
                 if (data.affectedRows) {
@@ -81,9 +80,9 @@ module.exports = {
                         ...results,
                         password: undefined // untuk membuat password tidak ditampilkan atau agar tidak dilihat oleh user
                     }
-                    return responseStandard(res, 'Create User Successfully', { results }, 200, true)
+                    return responseStandard(res, 'Success to signup', { results }, 200, true)
                 } else {
-                    return responseStandard(res, 'Failed to create user', {}, 401, false)
+                    return responseStandard(res, 'Failed to signup', {}, 401, false)
                 }
             }
         }
@@ -93,8 +92,7 @@ module.exports = {
             name: joi.string().required(),
             email: joi.string().required(),
             password: joi.string().required(),
-            phone_number: joi.string().required(),
-            address: joi.string().required()
+            phone_number: joi.string().required()
         })
         
         let { value: results, error } = schema.validate(req.body)
@@ -114,8 +112,7 @@ module.exports = {
                 results = {
                     ...results,
                     role_id: 2,
-                    password: hashedPassword,
-                    profile_picture: "https://ui-avatars.com/api/?size=256&name=" + name
+                    password: hashedPassword
                 }
                 const data = await userModel.createUser(results)
                 if (data.affectedRows) {
@@ -124,10 +121,48 @@ module.exports = {
                         ...results,
                         password: undefined // untuk membuat password tidak ditampilkan atau agar tidak dilihat oleh user
                     }
-                    return responseStandard(res, 'Create User Successfully', { results }, 200, true)
+                    return responseStandard(res, 'Signup to seller success', { results }, 200, true)
                 } else {
                     return responseStandard(res, 'Failed to create user', {}, 401, false)
                 }
+            }
+        }
+    },
+    forgotPasswordController: async (req, res) => {
+        const schema = joi.object({
+            email: joi.string().required(),
+            password: joi.string().required()
+        })
+        let { value: results, error } = schema.validate(req.body)
+        if (error) {
+            return responseStandard(res, 'Error', {error: error.message}, 400, false)
+        } else {
+            const { email } = results
+            const { password } = results
+            const isExist = await userModel.getUserByCondition({ email })
+            if (isExist.length > 0) {
+                console.log('ada')
+                // console.log(isExist[0])
+                console.log(password)
+                if(password) {
+                    let salt = await bcrypt.genSalt(10)
+                    const hashedPassword = await bcrypt.hash(password, salt)    //untuk membuat hash password
+                    results = {
+                        password: hashedPassword
+                    } 
+                    console.log(results)
+                    if(isExist.length) {
+                        const data = await userModel.updateUser(results)
+                        console.log(data.affectedRows)
+                    if (data.affectedRows) {
+                        console.log('betul ga')
+                        return responseStandard(res, `User Has been Updated`, {results})
+                        }
+                    } 
+                }
+            }
+            else {
+                return responseStandard(res, 'Wrong email', {}, 400, false)
             }
         }
     }

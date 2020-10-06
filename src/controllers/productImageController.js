@@ -4,6 +4,10 @@ const responseStandard = require('../helpers/response')
 const paging = require('../helpers/pagination')
 const productImageModel = require('../models/productImageModel')
 const { APP_URL} = process.env
+const multer = require('multer')
+const multerHandler = require('../middleware/multerError')
+
+const uploadHelper = require('../helpers/upload')
 
 module.exports = {
   read: async (req, res) => {
@@ -31,54 +35,90 @@ module.exports = {
     return responseStandard(res, 'List of Product image', {results, pageInfo})
   },
   create: async(req, res) => {
+      uploadHelper(req, res, function (err) {
+        console.log('panjangnya ' + req.files.length)
+        console.log(req.files)
+      if (err instanceof multer.MulterError) {
+        //An error occurred
+        console.log(err.code === 'LIMIT_UNEXPECTED_FILE' || req.files.length === 0)
+        if(err.code === 'LIMIT_UNEXPECTED_FILE' && req.files.length === 0){
+            console.log(err.code === 'LIMIT_UNEXPECTED_FILE' && req.files.length > 0)
+            return responseStandard(res, 'fieldname doesnt match', {}, 500, false)
+        }
+        return responseStandard(res, err.message, {}, 500, false)
+      } else if (err) {
+        console.log(err.message)
+        return responseStandard(res, err.message, {}, 401, false)
+        //An error occurred
+      }
       const schema = joi.object({
         product_id: joi.number().required()
       })
 
       let { value: results, error } = schema.validate(req.body)
-    //   console.log(req.files[0].fieldname === undefined)
       if (error) {
           return responseStandard(res, 'Error', {error: error.message}, 400, false)
       } else {
-          if(req.files.length === 0) {
-            return responseStandard(res, 'Images cannot be empty', {}, 500, false)
-        }
-        if (req.files[0].fieldname) {
-            console.log('true')
-        }
+        //   if(req.files.length === 0) {
+        //     return responseStandard(res, 'Images cannot be empty', {}, 500, false)
+        //   }
+          
+            console.log(req.files.length + 'segini')
+
+        // console.log(req.files)
+        // if (req.files.error === 'error') {
+        //     console.log('true')
+        //     return responseStandard(res, 'Invalid file type. Only image files are allowed.', {}, 500, false)
+        // }
 
         for (let i = 0; i < req.files.length; i++) {
-            if (req.files[i].mimetype === 'error') {
+            if(!req.files[i]) {
                 console.log('true')
-                return responseStandard(res, 'Invalid file type. Only image files are allowed.', {}, 500, false)
-            } else {
-                if(req.files[i].size >= 50000) {
-                    console.log('true')
-                    return responseStandard(res, 'maximum allowed file size 500 KB', {}, 500, false)
-                }
+                return responseStandard(res, 'maximum allowed file size 500 KB', {}, 500, false)
+            }
+            if(req.files[i].fieldname !== 'picture') {
+            console.log('iya iya')
+            return responseStandard(res, `file can't be more than 4`, {}, 401, false)
             }
         }
+        
         let url = ''
         for (let x = 0; x < req.files.length; x++) {
                 let picture = `${APP_URL}uploads/${req.files[x].filename}`
                 url += picture + ', '
+                console.log(x)
+                if(x === req.files.length - 1){
+                    url = url.slice(0, url.length - 2)
+                    console.log(x)
+                }
             }
-            console.log(url)
         results = {
         ...results,
         url
         }
-        const data = await productImageModel.createProductImage(results)
-        results = {
-                id: data.insertId,
-                ...results,
-            }
-        if (data.affectedRows) {
-            return responseStandard(res, 'Create Product Image Successfully', { results }, 200, true)
-        } else {
-            return responseStandard(res, 'Failed to create Product Image', {}, 401, false)
+        let data = productImageModel.createProductImage(results)
+        async data =>  {
+            return hasil()
+            .then(res => res)
+            .catch(err => err)
         }
+
+        (async () => {
+            try {
+                let created = await data
+                results = {
+                    id: created.insertId,
+                    ...results,
+                }
+                if(created.affectedRows){
+                    return responseStandard(res, `Product Image Has been Created`, {results}, 200, true)
+                }
+            } catch (err) {
+                return responseStandard(res, err.message, {results}, 500, false)
+            }
+        })();
     }
+    })
   },
   updateProductImage: async(req, res) => {
     let { id } = req.params
