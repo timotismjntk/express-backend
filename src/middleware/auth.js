@@ -12,7 +12,7 @@ module.exports = {
             try{
                 const payload = jwt.verify(token, process.env.CUST_SECRET_KEY)
                 if(payload){
-                    console.log('this' +res)
+                    // console.log('this' +res)
                     req.user = payload
                     next()
                 }else {
