@@ -37,6 +37,23 @@ module.exports = {
         }
         )
     },
+    getProductDetail: (data) =>{
+        return new Promise((resolve, reject) =>{
+            db.query(`SELECT product.id, product_image.url AS url, product.name AS name, category.category_name AS category, conditions.condition_name AS conditions, product.description AS description, product.price AS price
+            FROM product
+                LEFT JOIN conditions ON product.condition_id = conditions.id
+                LEFT JOIN category ON product.category_id = category.id
+                LEFT JOIN product_image ON product_image.product_id = product.id
+            WHERE product.?`, data, (err, result, _fields)=>{
+                // console.log(data)
+                if(err) {
+                    reject(err);
+                }else {
+                    resolve(result)
+                }
+            })
+        })
+    },
     getProductByCondition: (data) =>{
         return new Promise((resolve, reject) =>{
             db.query(`SELECT * FROM ${table} WHERE ?`, data, (err, result, _fields)=>{
