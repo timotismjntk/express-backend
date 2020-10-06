@@ -38,5 +38,16 @@ module.exports = {
                 }
             })
         })
+    },
+    updateUser: (data={}, id) => {
+        return new Promise((resolve, reject) =>{
+            db.query(`UPDATE ${table} SET ? WHERE id = ${10}`, data, (err, result, _fields)=>{
+                if(err) {
+                    reject(err)
+                }else {
+                    resolve(result)
+                }
+            })
+        })
     }
 }
