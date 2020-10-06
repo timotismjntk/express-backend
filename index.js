@@ -39,9 +39,9 @@ app.use('/uploads', express.static('assets/uploads'))   // untuk bisa diakses se
 app.use('/items', itemsRouter)
 app.use('/new_item', newItemRouter)
 app.use('/auth', authRouter)
-app.use('/user', userRouter)
+// app.use('/user', userRouter)
 app.use('/customer', authMiddleware.authUser, customerRouter)
-app.use('/cart', cartRouter)
+app.use('/user/cart', authMiddleware.authUser, cartRouter)
 // app.use('/customer', authMiddleware, LoginUserRouter)
 
 
@@ -56,18 +56,26 @@ const manageCategory = require('./src/routes/manageCategory')
 const newProduct = require('./src/routes/newProductRoutes')
 const popularProduct = require('./src/routes/popular')
 const colorProduct = require('./src/routes/productColor')
+const imageProduct = require('./src/routes/productImage')
+// const productDetail = require('./src/routes/manageProduct')
+const address = require('./src/routes/addressRoute')
+const publicRoute = require('./src/routes/publicRoutes.js')
 
 // Define Routes for manage
 app.use('/manage/roles', authMiddleware.authUser, manageRoles)
 app.use('/manage/users', authMiddleware.authUser, manageUsers)
-app.use('/manage/product', manageProduct)
+app.use('/manage/product', manageProduct) // authMiddleware.authUser, 
 app.use('/manage/condition', manageCondition)
 app.use('/manage/category', manageCategory)
-app.use('/new/product', newProduct)
-app.use('/rating', ratingRouter)
-app.use('/popular/product', popularProduct)
-app.use('/color/product', colorProduct)
+app.use('/manage/image', imageProduct)
+app.use('/manage/rating', ratingRouter)
 
+// app.use('/product/detail:id', manageProduct.getProductDetail)
+app.use('/users/address', authMiddleware.authUser, address)
+
+// public routes
+app.use('/public', publicRoute)
+app.use('/publics/popular', popularProduct)
 
 // Error 404 Pages
 app.get('*', (req, res) => {
