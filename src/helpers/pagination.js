@@ -4,14 +4,14 @@ const {
 } = process.env
 
 module.exports = (req, totalData) => {
-    let { page = 1, limit = 5 } = req.query
+    let { page = 1, limit = 30 } = req.query
     limit = parseInt(limit)
     page = parseInt(page)
     if (page < 1) {
         page = 1
     }
     if (limit < 1 || limit > 100) {
-        limit = 5
+        limit = 30
     }
     const totalPage = Math.ceil(totalData / limit)
     console.log(totalPage)
