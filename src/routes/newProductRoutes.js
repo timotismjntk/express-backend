@@ -1,6 +1,6 @@
 const { Router } = require('express')
 const {
-    read
+    readNew
 } = require('../controllers/newProductController')
 
 // const authMiddleware = require('../middleware/auth')
@@ -15,6 +15,6 @@ const router = Router()
 
 
 
-router.get('/', read)
+router.get('/', readNew)
 
 module.exports = router

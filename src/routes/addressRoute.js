@@ -1,12 +1,12 @@
 const { Router } = require('express')
 const {
-    readCategory, 
+    read, 
     create, 
-    getCategoryId,
-    updateCategory,
-    updateCategoryPartial,
-    deleteCategory
-} = require('../controllers/categoryController')
+    getAddressId,
+    updateAddress,
+    updateAddressPartial,
+    deleteAddress
+} = require('../controllers/addresController')
 
 const authMiddleware = require('../middleware/auth')
 // authMiddleware.authRole()  adalah cara untuk membatasi jika bukan admin maka tidak akan bisa mengakses route manages role
@@ -18,11 +18,11 @@ const router = Router()
 // "description": "Responsible to manage roles",
 
 
-router.get('/', readCategory)
-router.get('/:id', getCategoryId)
+router.get('/', read)
+router.get('/:id', getAddressId)
 router.post('/', create)
-router.put('/:id', updateCategory)
-router.patch('/:id', updateCategoryPartial)
-router.delete('/:id', deleteCategory)
+router.put('/', updateAddress)
+router.patch('/', updateAddressPartial)
+router.delete('/:id', deleteAddress)
 
 module.exports = router

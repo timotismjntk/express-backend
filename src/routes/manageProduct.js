@@ -4,6 +4,7 @@ const {
   create,
   getNewProduct,
   getProductId,
+  getDetailProduct,
   updateProduct,
   updateProductPartial,
   deleteProduct
@@ -18,12 +19,13 @@ const router = Router()
 // "name": "Seller",
 // "description": "Responsible to product",
 
-router.get('/', read)
-router.get('/new/', getNewProduct)
-router.get('/:id', getProductId)
-router.post('/', authMiddleware.authRole(2), create)
+router.get('/', read) // authMiddleware.authRole(2)
+router.get('/new/', authMiddleware.authRole(2), getNewProduct)
+router.get('/:id', getProductId)  // authMiddleware.authRole(2)
+router.get('/detail/:id', authMiddleware.authRole(2), getDetailProduct)
+router.post('/', create)
 router.put('/:id', authMiddleware.authRole(2), updateProduct)
-router.patch('/:id', authMiddleware.authRole(2), updateProductPartial)
-router.delete('/:id', authMiddleware.authRole(2), deleteProduct)
+router.patch('/:id', updateProductPartial) // authMiddleware.authRole(2)
+router.delete('/:id', deleteProduct) // authMiddleware.authRole(2), 
 
 module.exports = router

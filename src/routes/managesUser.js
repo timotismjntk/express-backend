@@ -17,10 +17,10 @@ const uploadHelper = require('../helpers/upload')
 
 router.get('/', read)
 router.get('/:id', getUserId)
-// router.post('/', uploadHelper.single('picture'), create)
-router.put('/:id', updateUser)
-router.put('/', updateUser)
-router.patch('/:id', updateUserPartial)
+router.put('/:id', uploadHelper, updateUser)
+router.put('/', uploadHelper, updateUser)
+router.patch('/', uploadHelper, updateUserPartial)
+router.patch('/:id', uploadHelper, updateUserPartial)
 router.delete('/:id', authMiddleware.authRole(1), deleteUser)
 
 module.exports = router
