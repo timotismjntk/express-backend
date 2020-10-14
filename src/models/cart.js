@@ -15,7 +15,7 @@ const table = 'cart'
 module.exports = {
     read: (data={}) => {
       return new Promise((resolve, reject) =>{
-        db.query(`SELECT product.name, cart.quantity, product.price, cart.summary FROM cart INNER JOIN product ON cart.product_id = product.id WHERE ?`, data, (err, result, _fields) => {
+        db.query(`SELECT cart.id, cart.product_id, product.name, SUM(cart.quantity) AS quantity, SUM(price*cart.quantity) AS price, product_image.url, cart.summary FROM cart INNER JOIN product ON cart.product_id = product.id INNER JOIN product_image ON product.id = product_image.product_id WHERE cart. ? GROUP BY cart.product_id`, data, (err, result, _fields) => {
           if(err) {
             reject(err);
           }else {
@@ -49,11 +49,10 @@ module.exports = {
         })
       })
     },
-    getCartByCondition: (data={}) =>{
+    getCartByCondition: (data) =>{
+        console.log(data)
         return new Promise((resolve, reject) =>{
-            db.query(`SELECT product.id, product_image.url AS url, product.name AS name,
-            product.price AS price FROM product 
-            LEFT JOIN product_image ON product_image.product_id = product.id WHERE ?`, data, (err, result, _fields)=>{
+            db.query(`SELECT cart.id, cart.product_id, product.name, SUM(cart.quantity) AS quantity, SUM(price*cart.quantity) AS price, product_image.url, cart.summary FROM cart INNER JOIN product ON cart.product_id = product.id INNER JOIN product_image ON product.id = product_image.product_id WHERE cart.product_id=${data[0]} AND cart.user_id=${data[1]} GROUP BY cart.product_id`, (err, result, _fields)=>{
                 console.log(data)
                 if(err) {
                     reject(err);
@@ -75,10 +74,10 @@ module.exports = {
             })
         })
     },
-    updateCart: (data={}, id) => {
+    updateCart: (data={}, id, product_id) => {
         return new Promise((resolve, reject) =>{
           console.log(data)
-            db.query(`UPDATE ${table} SET ? WHERE user_id = ${id}`, data, (err, result, _fields)=>{
+            db.query(`UPDATE ${table} SET ? WHERE user_id = ${id} AND product_id=${product_id}`, data, (err, result, _fields)=>{
                 if(err) {
                     reject(err)
                 }else {
@@ -87,9 +86,9 @@ module.exports = {
             })
         })
     },
-    updateCartPartial: (data={}, id) => {
+    updateCartPartial: (data={}, id, product_id) => {
         return new Promise((resolve, reject) =>{
-            db.query(`UPDATE ${table} SET ? WHERE id = ${id}`, data, (err, result, _fields)=>{
+            db.query(`UPDATE ${table} SET ? WHERE id = ${id} AND product_id=`, data, (err, result, _fields)=>{
                 if(err) {
                     reject(err)
                 }else {
@@ -98,9 +97,11 @@ module.exports = {
             })
         })
     },
-    deleteCart: (data) => {
+    deleteCart: (data1, data2) => {
         return new Promise((resolve, reject) =>{
-            db.query(`DELETE FROM ${table} WHERE ?`, data, (err, result, _fields)=> {
+            console.log(data2)
+            console.log(data1)
+            db.query(`DELETE FROM ${table} WHERE cart.user_id=${data1} and cart.id=${data2}`, (err, result, _fields)=> {
                 if(err) {
                     reject(err)
                 }else {
@@ -123,7 +124,7 @@ module.exports = {
     checkOut: (data={}) => {
       console.log(data)
       return new Promise((resolve, reject) =>{
-        db.query(`SELECT product.name, cart.quantity, product.price, cart.summary FROM cart INNER JOIN product ON cart.product_id = product.id WHERE ?`, data, (err, result, _fields) => {
+        db.query(`SELECT product.name, cart.quantity, product.price, product_image.url, cart.summary FROM cart INNER JOIN product ON cart.product_id = product.id INNER JOIN product_image ON product.id = product_image.product_id WHERE ?`, data, (err, result, _fields) => {
           // console.log(data)
           if(err) {
             reject(err);
