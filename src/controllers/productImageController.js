@@ -34,20 +34,16 @@ module.exports = {
     console.log(results)
     return responseStandard(res, 'List of Product image', {results, pageInfo})
   },
-  create: async(req, res) => {
-      uploadHelper(req, res, function (err) {
-        console.log('panjangnya ' + req.files.length)
-        console.log(req.files)
+  create: (req, res) => {
+      uploadHelper(req, res, async function(err) {
       if (err instanceof multer.MulterError) {
         //An error occurred
-        console.log(err.code === 'LIMIT_UNEXPECTED_FILE' || req.files.length === 0)
         if(err.code === 'LIMIT_UNEXPECTED_FILE' && req.files.length === 0){
             console.log(err.code === 'LIMIT_UNEXPECTED_FILE' && req.files.length > 0)
             return responseStandard(res, 'fieldname doesnt match', {}, 500, false)
         }
         return responseStandard(res, err.message, {}, 500, false)
       } else if (err) {
-        console.log(err.message)
         return responseStandard(res, err.message, {}, 401, false)
         //An error occurred
       }
@@ -63,7 +59,6 @@ module.exports = {
         //     return responseStandard(res, 'Images cannot be empty', {}, 500, false)
         //   }
           
-            console.log(req.files.length + 'segini')
 
         // console.log(req.files)
         // if (req.files.error === 'error') {
@@ -96,98 +91,117 @@ module.exports = {
         ...results,
         url
         }
-        let data = productImageModel.createProductImage(results)
-        async data =>  {
-            return hasil()
-            .then(res => res)
-            .catch(err => err)
-        }
-
-        (async () => {
-            try {
-                let created = await data
-                results = {
-                    id: created.insertId,
-                    ...results,
-                }
-                if(created.affectedRows){
-                    return responseStandard(res, `Product Image Has been Created`, {results}, 200, true)
-                }
-            } catch (err) {
-                return responseStandard(res, err.message, {results}, 500, false)
-            }
-        })();
-    }
-    })
-  },
-  updateProductImage: async(req, res) => {
-    let { id } = req.params
-    id = Number(id)
-    const schema = joi.object({
-      product_id: joi.number().required()
-    })
-    let { value: results, error } = schema.validate(req.body)
-    if (error) {
-        return responseStandard(res, 'Error', {error: error.message}, 400, false)
-    }else {
-      if(!req.file) {
-        return responseStandard(res, 'Invalid file type. Only image files are allowed.', {}, 500,)
-    } else {
-        if(req.file.size >= 50000) {
-            return responseStandard(res, 'maximum allowed file size 500 KB', {}, 500,)
-        }
-    }
-      let picture = `${APP_URL}uploads/${req.file.filename}`
-      results = {
-        id: data.insertId,
-        ...results,
-        url: picture
-    }
-      const update = await productImageModel.updateProductImage(results, id)
-      if(update.affectedRows) {
-          return responseStandard(res, `Product Image Has been Updated`, {})
-      } else {
-          return responseStandard(res, 'Product Image Not found', {}, 401, false)
-      }
-    }
-  },
-  updateProductImagePartial: async (req, res) => {
-    let { id } = req.params
-    id = Number(id)
-    const schema = joi.object({
-        product_id: joi.number()
-    })
-    let { value: results, error } = schema.validate(req.body)
-    if (error) {
-        return responseStandard(res, 'Error', {error: error.message}, 400, false)
-    } else {
-        
-    let { product_id } = results
-        id = Number(id)
-        if (product_id || req.file){
-            if(!req.file) {
-                return responseStandard(res, 'Invalid file type. Only image files are allowed.', {}, 500,)
-            } else {
-                if(req.file.size >= 50000) {
-                    return responseStandard(res, 'maximum allowed file size 500 KB', {}, 500,)
-                }
-            }
-            let picture = `${APP_URL}uploads/${req.file.filename}`
+        let data = await productImageModel.createProductImage(results)
+        console.log(data)
+        if(data.affectedRows){
             results = {
                 id: data.insertId,
                 ...results,
-                url: picture
             }
-            const update = await productImageModel.updateProductImagePartial(results, id )
-            if(update.affectedRows) {
-                return responseStandard(res, `Product Image Has been Updated`, {})
-            } else {
-                return responseStandard(res, 'Product Image Not found', {}, 401, false)
-            }
+            return responseStandard(res, `Product Image Has been Created`, {results}, 200, true)
         } else {
-            return responseStandard(res, 'At least fill one column!', '', 400, false)
+            return responseStandard(res, 'Error to create Product Image', {}, 500, false)
         }
+        // async data =>  {
+        //     return hasil()
+        //     .then(res => res)
+        //     .catch(err => err)
+        // }
+
+        // (async () => {
+        //     try {
+        //         let created = await data
+        //         results = {
+        //             id: created.insertId,
+        //             ...results,
+        //         }
+        //         if(created.affectedRows){
+        //             return responseStandard(res, `Product Image Has been Created`, {results}, 200, true)
+        //         }
+        //     } catch (err) {
+        //         return responseStandard(res, err.message, {results}, 500, false)
+        //     }
+        // })();
     }
+    })
+  },
+  updateProductImage: (req, res) => {
+    const { id } = req.params
+    uploadHelper(req, res, async function(err) {
+        if (err instanceof multer.MulterError) {
+          //An error occurred
+          if(err.code === 'LIMIT_UNEXPECTED_FILE' && req.files.length === 0){
+              console.log(err.code === 'LIMIT_UNEXPECTED_FILE' && req.files.length > 0)
+              return responseStandard(res, 'fieldname doesnt match', {}, 500, false)
+          }
+          return responseStandard(res, err.message, {}, 500, false)
+        } else if (err) {
+          return responseStandard(res, err.message, {}, 401, false)
+          //An error occurred
+        }
+        const schema = joi.object({
+          product_id: joi.number().required()
+        })
+  
+        let { value: results, error } = schema.validate(req.body)
+        if (error) {
+            return responseStandard(res, 'Error', {error: error.message}, 400, false)
+        } else {
+  
+          for (let i = 0; i < req.files.length; i++) {
+              if(!req.files[i]) {
+                  console.log('true')
+                  return responseStandard(res, 'maximum allowed file size 500 KB', {}, 500, false)
+              }
+              if(req.files[i].fieldname !== 'picture') {
+              console.log('iya iya')
+              return responseStandard(res, `file can't be more than 4`, {}, 401, false)
+              }
+          }
+          
+          let url = ''
+          for (let x = 0; x < req.files.length; x++) {
+                  let picture = `${APP_URL}uploads/${req.files[x].filename}`
+                  url += picture + ', '
+                  console.log(x)
+                  if(x === req.files.length - 1){
+                      url = url.slice(0, url.length - 2)
+                      console.log(x)
+                  }
+              }
+          results = {
+          ...results,
+          url
+          }
+          let data = await productImageModel.updateProductImage(results, id)
+          console.log(data)
+          if(data.affectedRows){
+              return responseStandard(res, `Product Image Has been Created`, {results}, 200, true)
+          } else {
+              return responseStandard(res, 'Error to create Product Image', {}, 500, false)
+          }
+          // async data =>  {
+          //     return hasil()
+          //     .then(res => res)
+          //     .catch(err => err)
+          // }
+  
+          // (async () => {
+          //     try {
+          //         let created = await data
+          //         results = {
+          //             id: created.insertId,
+          //             ...results,
+          //         }
+          //         if(created.affectedRows){
+          //             return responseStandard(res, `Product Image Has been Created`, {results}, 200, true)
+          //         }
+          //     } catch (err) {
+          //         return responseStandard(res, err.message, {results}, 500, false)
+          //     }
+          // })();
+      }
+      })
 },
   getProductImageId: async (req, res) => {
       const { id } = req.params
