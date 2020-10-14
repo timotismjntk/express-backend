@@ -49,6 +49,20 @@ module.exports = {
             })
         })
     },
+    getAddressPrimaryByCondition: (data, data2) =>{
+        console.log(data)
+        // console.log(data2)
+        return new Promise((resolve, reject) =>{
+            db.query(`SELECT * FROM ${table} WHERE ? AND isPrimary=${data2}`, data, (err, result, _fields)=>{
+                // console.log(data)
+                if(err) {
+                    reject(err);
+                }else {
+                    resolve(result)
+                }
+            })
+        })
+    },
     createAddress: (data={}) => {
         return new Promise((resolve, reject) =>{
             console.log(data)
