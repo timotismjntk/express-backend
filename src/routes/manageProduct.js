@@ -23,7 +23,7 @@ router.get('/', read) // authMiddleware.authRole(2)
 router.get('/new/', authMiddleware.authRole(2), getNewProduct)
 router.get('/:id', getProductId)  // authMiddleware.authRole(2)
 router.get('/detail/:id', authMiddleware.authRole(2), getDetailProduct)
-router.post('/', create)
+router.post('/', authMiddleware.authUser, authMiddleware.authRole(2), create)
 router.put('/:id', authMiddleware.authRole(2), updateProduct)
 router.patch('/:id', updateProductPartial) // authMiddleware.authRole(2)
 router.delete('/:id', deleteProduct) // authMiddleware.authRole(2), 
