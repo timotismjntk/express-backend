@@ -9,6 +9,6 @@ router.get('/checkout', checkout)
 router.post('/', create)
 router.put('/', updateCart)
 router.patch('/', updateCartPartial)
-router.delete('/', deleteCart)
+router.delete('/:product_id', deleteCart)
 
 module.exports = router
