@@ -26,7 +26,7 @@ const storage = multer.diskStorage({
 let fileFilter = (req, file, cb) => {
     console.log(!file)
     // console.log(req.files[0].fieldname  === 'picture')
-    var allowedMimes = ['image/jpeg', 'image/jpg', 'image/png', 'image/PNG'];
+    var allowedMimes = ['image/jpeg', 'image/jpg', 'image/png', 'image/PNG', 'image/svg+xml'];
     // console.log(file)
     
     // console.log(cekFile.slice(cekFile.indexOf('.'), cekFile.length))
@@ -50,4 +50,4 @@ let fileFilter = (req, file, cb) => {
 // }
 
 
-module.exports = multer({storage, fileFilter, limits: { fileSize: 500000 }}).array('picture', 4)
+module.exports = multer({storage, fileFilter, limits: { fileSize: 2000000 }}).array('picture', 4)
