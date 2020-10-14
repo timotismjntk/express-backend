@@ -15,8 +15,8 @@ const table = 'product'
 module.exports = {
     readNewProduct: (data=[id, '']) => {
         return new Promise((resolve, reject) =>{
-            db.query(`SELECT product.id, product.name, product.quantity, product.price, product.description, conditions.name, category.name FROM product INNER JOIN conditions ON product.condition_id = conditions.id INNER JOIN category ON product.category_id = category.id WHERE conditions.id = ${1} AND product.${data[0]} LIKE '%${data[1]}%' ORDER BY product.${data[2]} ${data[3]} LIMIT ${data[4]} OFFSET ${data[5]}`, (err, result, _fields) => {
-                console.log(data[1])
+            db.query(`SELECT product.id, product.name, product.quantity, product.price, product.store_name, product.description, conditions.condition_name, category.category_name, product_image.url, product.rating_id AS total_rating, product.created_at FROM product INNER JOIN conditions ON product.condition_id = conditions.id INNER JOIN category ON product.category_id = category.id INNER JOIN product_image ON product.id = product_image.product_id INNER JOIN rating ON product.rating_id = rating.rating AND product.${data[0]} LIKE '%${data[1]}%' ORDER BY ${data[2]} ${data[3]} LIMIT ${data[4]} OFFSET ${data[5]}`, (err, result, _fields) => {
+                console.log(data)
                 if(err) {
                     reject(err);
                 }else { 
