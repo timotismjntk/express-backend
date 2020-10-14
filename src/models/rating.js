@@ -1,47 +1,97 @@
 const db = require('../helpers/db')
 const table = 'rating'
 
+/*
+    INSERT INTO post ? SET ? WHERE ?        // tanda tanya '?' adalah prepare statement yang nantinya akan mengisi kedalamanya value dari sebuah array yang sudah diserialize
+
+    [{title: 'hello'}, {id: 1}]
+
+    akan menghasilkan,
+    INSERT INTO post SET title=hello WHERE id=1
+
+    tanda tanya ?? dua akan menghasilkan value string
+*/
+
 module.exports = {
-    getDetailRatingModel: (id, cb) => {
-    db.query(`SELECT * FROM ${table} WHERE id=${id}`, (_err, result, _fields) => {
-      cb(result)
-    })
-  },
-  getDetailRatingModel2: (arr, cb) => {
-    db.query(`SELECT * FROM ${table} WHERE ${arr[0]} LIKE '%${arr[1]}%' ORDER BY ${arr[4]} ${arr[5]} LIMIT ${arr[2]} OFFSET ${arr[3]}`, (err, data, _fields) => {
-      cb(err, data)
-    })
-  },
-  createRatingModel: (rating_total, cb) => {
-    db.query(`INSERT INTO ${table} (rating_total) VALUES (${rating_total})`, (err, result, _field) => {
-      cb(err, result)
-    })
-  },
-  getRatingModelData: (cb) => {
-    db.query(`SELECT COUNT(*) AS count FROM ${table} `,
-      (_err, data, _fields) => {
-        cb(data)
-      })
-  },
-  getRatingModel: (arr, cb) => {
-    db.query(`SELECT * FROM ${table} WHERE ${arr[0]} LIKE '%${arr[1]}%' ORDER BY ${arr[4]} ${arr[5]} LIMIT ${arr[2]} OFFSET ${arr[3]}`, (err, data, _fields) => {
-      cb(err, data)
-    })
-  },
-  updateRatingModel: (arr, id, cb) => {
-    db.query(`UPDATE ${table} SET name="${arr[0]}", price=${arr[1]}, store='${arr[2]}', rating=${arr[3]}, category='${arr[4]}' WHERE id=${id}`,
-      (err, result, _fields) => {
-        cb(err, result)
-      })
-  },
-  updatePartialModel: (arr, cb) => {
-    db.query(`UPDATE ${table} SET ${arr[0]} WHERE id=${arr[1]}`, (err, result, _fields) => {
-      cb(err, result)
-    })
-  },
-  deleteRatingModel: (id, cb) => {
-    db.query(`DELETE FROM ${table} WHERE id=${id}`, (err, result, _fields) => {
-      cb(err, result)
-    })
-  }
+    read: (data=[id, '']) => {
+        return new Promise((resolve, reject) =>{
+            db.query(`SELECT * FROM ${table} WHERE ${data[0]} LIKE '%${data[1]}%' ORDER BY rating.${data[2]} ${data[3]} LIMIT ${data[4]} OFFSET ${data[5]}`, (err, result, _fields) => {
+                console.log(data[1])
+                if(err) {
+                    reject(err);
+                }else { 
+                    resolve(result);
+                }
+            })
+        })
+    },
+    countRating: () => {
+        return new Promise((resolve, reject) =>{
+            db.query(`SELECT COUNT(*) as count FROM ${table}`, (err, result, _fields) =>{
+                if(err) {
+                    reject(err);
+                }else {
+                    resolve(result[0].count);
+                }
+            })
+        }
+        )
+    },
+    getRatingByCondition: (data) =>{
+        return new Promise((resolve, reject) =>{
+            db.query(`SELECT * FROM ${table} WHERE ?`, data, (err, result, _fields)=>{
+                // console.log(data)
+                if(err) {
+                    reject(err);
+                }else {
+                    resolve(result)
+                }
+            })
+        })
+    },
+    create: (data={}) => {
+        return new Promise((resolve, reject) =>{
+            console.log(data)
+            db.query(`INSERT INTO ${table} SET ?`, data, (err, result, _fields)=> {
+                if(err) {
+                    reject(err);
+                }else {
+                    resolve(result)
+                }
+            })
+        })
+    },
+    updateRating: (data={}, id) => {
+        return new Promise((resolve, reject) =>{
+            db.query(`UPDATE ${table} SET ? WHERE id = ${id}`, data, (err, result, _fields)=>{
+                if(err) {
+                    reject(err)
+                }else {
+                    resolve(result)
+                }
+            })
+        })
+    },
+    updateRatingPartial: (data={}, id) => {
+        return new Promise((resolve, reject) =>{
+            db.query(`UPDATE ${table} SET ? WHERE id = ${id}`, data, (err, result, _fields)=>{
+                if(err) {
+                    reject(err)
+                }else {
+                    resolve(result)
+                }
+            })
+        })
+    },
+    deleteRating: (data) => {
+        return new Promise((resolve, reject) =>{
+            db.query(`DELETE FROM ${table} WHERE ?`, data, (err, result, _fields)=> {
+                if(err) {
+                    reject(err)
+                }else {
+                    resolve(result)
+                }
+            })
+        })
+    }
 }
