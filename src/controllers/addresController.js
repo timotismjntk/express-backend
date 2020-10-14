@@ -5,6 +5,7 @@ const addressModel = require('../models/addressModel')
 
 module.exports = {
   read: async (req, res) => {
+      let {id} = req.user
     const count = await addressModel.countAddress()
     const page = paging(req, count)
     const { offset, pageInfo } = page
@@ -20,7 +21,8 @@ module.exports = {
           recipient_number: joi.string().required(),
           address_name: joi.string().required(),
           postal_code: joi.string().required(),
-          city: joi.string().required()
+          city: joi.string().required(),
+          isPrimary: joi.number()
       })
 
       let { value: results, error } = schema.validate(req.body)
@@ -51,7 +53,8 @@ module.exports = {
         recipient_number: joi.string().required(),
         address_name: joi.string().required(),
         postal_code: joi.string().required(),
-        city: joi.string().required()
+        city: joi.string().required(),
+        isPrimary: joi.number(),
     })
     let { value: results, error } = schema.validate(req.body)
     if (error) {
@@ -79,16 +82,17 @@ module.exports = {
           recipient_number: joi.string(),
           address_name: joi.string(),
           postal_code: joi.string(),
-          city: joi.string()
+          city: joi.string(),
+          isPrimary: joi.number(),
       })
     let { value: results, error } = schema.validate(req.body)
     if (error) {
         return responseStandard(res, 'Error', {error: error.message}, 400, false)
     }else {
         
-    let { place, recipient_name, recipient_number, address_name, postal_code, city } = results
+    let { place, recipient_name, recipient_number, address_name, postal_code, city, isPrimary } = results
         id = Number(id)
-        if (place || recipient_name || recipient_number || address_name || postal_code || city){
+        if (place || recipient_name || recipient_number || address_name || postal_code || city || isPrimary){
             results = {
                 ...results,
                 user_id: id
@@ -105,14 +109,24 @@ module.exports = {
     }
 },
   getAddressId: async (req, res) => {
-      const { id } = req.params
-      const data = await addressModel.getAddressByCondition({ id })
+      const { id } = req.user
+      const { isPrimary } = req.params
+      const data = await addressModel.getAddressPrimaryByCondition({user_id: id}, isPrimary)
       if(data.length > 0) {
           return responseStandard(res, `Address`, {data})
       } else {
-          return responseStandard(res, 'Not found', {}, 401, false)
+          return responseStandard(res, 'Address Not found', {}, 401, false)
       }
   },
+  getAddress: async (req, res) => {
+    const { id } = req.user
+    const data = await addressModel.getAddressByCondition({ user_id: id })
+    if(data.length > 0) {
+        return responseStandard(res, `Address`, {data})
+    } else {
+        return responseStandard(res, 'Address Not found', {}, 401, false)
+    }
+},
   deleteAddress: async (req, res) => {
       const { id } = req.params
       let condition_id  = Number(id)
