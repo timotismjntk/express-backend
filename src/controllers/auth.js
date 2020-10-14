@@ -19,6 +19,7 @@ module.exports = {
             if(result.length) {
                 console.log(result[0].role_id)
                 var uid = result[0].id
+                var store_name = result[0].name
                 var mail = result[0].email
                 var role = result[0].role_id
                 console.log('ini' +role)
@@ -28,7 +29,10 @@ module.exports = {
                         // console.log('condition ', result)
                         console.log('condition ', mail)
                         if(result) {
-                            jwt.sign({role_id: role, email: mail, id: uid}, process.env.CUST_SECRET_KEY, {expiresIn: 1511}, (err, token)=>{
+                            if(role !== 2){
+                                store_name = ''
+                            }
+                            jwt.sign({role_id: role, store_name, email: mail, id: uid}, process.env.CUST_SECRET_KEY, {expiresIn: 1511}, (err, token)=>{
                                 return responseStandard(res, token)
                             }) 
                         }
@@ -50,7 +54,7 @@ module.exports = {
             name: joi.string().required(),
             email: joi.string().required(),
             password: joi.string().required(),
-            phone_number: joi.string().required()
+            // phone_number: joi.string().required()
         })
         
         let { value: results, error } = schema.validate(req.body)
