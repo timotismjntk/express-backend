@@ -6,7 +6,7 @@ const {
     updateUser,
     updateUserPartial,
     deleteUser
-} = require('../controllers/usersController')
+} = require('../controllers/managesUserController.js')
 
 const authMiddleware = require('../middleware/auth')
 
