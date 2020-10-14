@@ -20,9 +20,9 @@ const router = Router()
 
 router.get('/', readCategory)
 router.get('/:id', getCategoryId)
-router.post('/', create)
-router.put('/:id', updateCategory)
-router.patch('/:id', updateCategoryPartial)
+router.post('/', authMiddleware.authUser, authMiddleware.authRole(2), create)
+router.put('/:id', authMiddleware.authUser, authMiddleware.authRole(2), updateCategory)
+router.patch('/:id', authMiddleware.authUser, authMiddleware.authRole(2), updateCategoryPartial)
 router.delete('/:id', deleteCategory)
 
 module.exports = router
