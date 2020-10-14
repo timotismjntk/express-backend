@@ -39,12 +39,7 @@ module.exports = {
     },
     getProductDetail: (data) =>{
         return new Promise((resolve, reject) =>{
-            db.query(`SELECT product.id, product_image.url AS url, product.name AS name, category.category_name AS category, conditions.condition_name AS conditions, product.description AS description, product.price AS price
-            FROM product
-                LEFT JOIN conditions ON product.condition_id = conditions.id
-                LEFT JOIN category ON product.category_id = category.id
-                LEFT JOIN product_image ON product_image.product_id = product.id
-            WHERE product.?`, data, (err, result, _fields)=>{
+            db.query(`SELECT product.id, product.name, product.quantity, product.price, product.store_name, product.description, conditions.condition_name, category.category_name, product_image.url, product.rating_id AS total_rating, product_color.hexcode AS hexcode, product.created_at FROM product INNER JOIN conditions ON product.condition_id = conditions.id INNER JOIN category ON product.category_id = category.id INNER JOIN product_image ON product.id = product_image.product_id INNER JOIN rating ON product.rating_id = rating.rating INNER JOIN product_color ON product.id = product_color.product_id WHERE product.?`, data, (err, result, _fields)=>{
                 // console.log(data)
                 if(err) {
                     reject(err);
@@ -68,7 +63,7 @@ module.exports = {
     },
     getNewProduct: (data=[id, '']) => {
         return new Promise((resolve, reject) =>{
-            db.query(`SELECT product.id, product.name, product.quantity, product.price, product.description, conditions.name, category.name FROM product INNER JOIN conditions ON product.condition_id = conditions.id INNER JOIN category ON product.category_id = category.id WHERE conditions.id = ${1} AND product.${data[0]} LIKE '%${data[1]}%' ORDER BY product.${data[2]} ${data[3]} LIMIT ${data[4]} OFFSET ${data[5]}`)
+            db.query(`SELECT product.id, product.name, product.quantity, product.price, product.store_name, product.description, conditions.condition_name, category.category_name, product_image.url, product.rating_id AS total_rating, product.created_at FROM product INNER JOIN conditions ON product.condition_id = conditions.id INNER JOIN category ON product.category_id = category.id INNER JOIN product_image ON product.id = product_image.product_id INNER JOIN rating ON product.rating_id = rating.rating AND product.${data[0]} LIKE '%${data[1]}%'`)
             console.log(data[2])
         })
     },
@@ -113,6 +108,18 @@ module.exports = {
                     reject(err)
                 }else {
                     resolve(result)
+                }
+            })
+        })
+    },
+    readPopularProduct: (data=[id, '']) => {
+        return new Promise((resolve, reject) =>{
+            db.query(`SELECT product.id, product.name, product.quantity, product.price, product.store_name, product.description, conditions.condition_name, category.category_name, product_image.url, product.rating_id AS total_rating, product.created_at FROM product INNER JOIN conditions ON product.condition_id = conditions.id INNER JOIN category ON product.category_id = category.id INNER JOIN product_image ON product.id = product_image.product_id INNER JOIN rating ON product.rating_id = rating.rating AND product.${data[0]} LIKE '%${data[1]}%' ORDER BY ${data[2]} ${data[3]} LIMIT ${data[4]} OFFSET ${data[5]}`, (err, result, _fields) => {
+                console.log(data)
+                if(err) {
+                    reject(err);
+                }else { 
+                    resolve(result);
                 }
             })
         })
