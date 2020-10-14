@@ -46,6 +46,10 @@ module.exports = {
       if (error) {
           return responseStandard(res, 'Error', {error: error.message}, 400, false)
       } else {
+              results = {
+                ...results,
+                store_name: req.user.store_name
+              }
               const data = await productModel.createProduct(results)
               if (data.affectedRows) {
                   results = {
@@ -178,5 +182,30 @@ module.exports = {
       } else {
           return responseStandard(res, 'Product Not found', {}, 401, false)
       }
+    },
+    popularProduct: async (req, res) => {
+      const count = await productModel.countProduct()
+      let { search, orderBy } = req.query
+      const page = paging(req, count)
+      let { offset=0, pageInfo } = page
+      const { limitData: limit } = pageInfo
+      if (typeof search === 'object') {
+          searchKey = Object.keys(search)[0]
+          searchValue = Object.values(search)[0]
+        } else {
+          searchKey = 'name'
+          searchValue = search || ''
+        }
+      if (typeof orderBy === 'object') {
+      orderByKey = Object.keys(orderBy)[0]
+      orderByValue = Object.values(orderBy)[0]
+      } else {
+      orderByKey = 'rating.id'
+      orderByValue = orderBy || 'DESC'
+      }
+      console.log(count)
+      const results = await productModel.readPopularProduct([searchKey, searchValue, orderByKey, orderByValue, limit, offset])
+      // console.log(results)
+      return responseStandard(res, 'List of Product', {results, pageInfo})
     }
 }
