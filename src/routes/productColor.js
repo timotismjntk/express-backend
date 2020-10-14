@@ -22,7 +22,7 @@ const router = Router()
 
 router.get('/', read)
 router.get('/:id', getProductId)
-router.post('/', authMiddleware.authRole(2), create)
+router.post('/', create)  //authMiddleware.authRole(2)
 router.put('/:id', authMiddleware.authRole(2), updateProduct)
 router.patch('/:id', authMiddleware.authRole(2), updateProductPartial)
 router.delete('/:id', authMiddleware.authRole(2), deleteProduct)
