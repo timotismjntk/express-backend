@@ -68,7 +68,7 @@ module.exports = {
                     
                     let url = ''
                     for (let x = 0; x < req.files.length; x++) {
-                            let picture = `${APP_URL}uploads/${req.files[x].filename}`
+                            let picture = `uploads/${req.files[x].filename}`
                             url += picture
                         }
                         console.log(url)

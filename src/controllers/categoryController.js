@@ -60,7 +60,7 @@ module.exports = {
         
         let url_image = ''
         for (let x = 0; x < req.files.length; x++) {
-                let picture = `${APP_URL}uploads/${req.files[x].filename}`
+                let picture = `uploads/${req.files[x].filename}`
                 url_image += picture + ', '
                 console.log(x)
                 if(x === req.files.length - 1){
@@ -131,7 +131,7 @@ module.exports = {
         
         let url_image = ''
         for (let x = 0; x < req.files.length; x++) {
-                let picture = `${APP_URL}uploads/${req.files[x].filename}`
+                let picture = `uploads/${req.files[x].filename}`
                 url_image += picture + ', '
                 console.log(x)
                 if(x === req.files.length - 1){
@@ -198,7 +198,7 @@ module.exports = {
                     }
                     let url_image = ''
                     for (let x = 0; x < req.files.length; x++) {
-                            let picture = `${APP_URL}uploads/${req.files[x].filename}`
+                            let picture = `uploads/${req.files[x].filename}`
                             url_image += picture + ', '
                             console.log(x)
                             if(x === req.files.length - 1){
