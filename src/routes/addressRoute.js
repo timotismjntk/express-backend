@@ -1,7 +1,8 @@
 const { Router } = require('express')
 const {
     read, 
-    create, 
+    create,
+    getAddress, 
     getAddressId,
     updateAddress,
     updateAddressPartial,
@@ -18,8 +19,9 @@ const router = Router()
 // "description": "Responsible to manage roles",
 
 
-router.get('/', read)
-router.get('/:id', getAddressId)
+router.get('/', getAddress)
+router.get('/:isPrimary', getAddressId)
+// router.get('/')
 router.post('/', create)
 router.put('/', updateAddress)
 router.patch('/', updateAddressPartial)
