@@ -8,6 +8,8 @@ Express.js is a web application framework for Node.js. [More about Express](http
 ## Built With
 [![Express.js](https://img.shields.io/badge/Express.js-4.x-orange.svg?style=rounded-square)](https://expressjs.com/en/starter/installing.html)
 [![Node.js](https://img.shields.io/badge/Node.js-v.12.18.3-green.svg?style=rounded-square)](https://nodejs.org/)
+[![jsonwebtoken](https://jwt.io/img/pic_logo.svg)](https://jwt.io/)
+[![node.bcrypt.js][https://github.com/kelektiv/node.bcrypt.js#readme]
 
 ## Requirements
 1. <a href="https://nodejs.org/en/download/">Node Js</a>
@@ -30,20 +32,47 @@ Express.js is a web application framework for Node.js. [More about Express](http
 
 **1. GET**
 
-* `/item`(Get All item) 
+* `/manage/product`(Get All product)
+* `/manage/product/:id`(Get product by id)
+* `/color/product`(Get All color product)
+* `/color/product/:id`(Get color product by id)
+* `/rating`(Get All rating)
+* `/rating/:id`(Get rating by id)
+* `/manage/category`(Get All category)
+* `/manage/category/:id`(Get category by id)
+* `/image/product`(Get All image product)
+* `/image/product/:id`(Get image product by id)
+* `/manage/user`(Get User By role_id)
 
 **2. POST**
 
-* `/items`(Add new item) 
+* `/manage/product`(Get All product)
+* `/color/product`(Get All color product)
+* `/rating`(Get All rating)
+* `/manage/category`(Get All category)
+* `/image/product`(Get All image product)
+* `/manage/user`(Get User By role_id) 
 
 **3. PUT**
 
-* `/items/{id}`(Update item by ID) 
+* `/manage/product/:id`(Get product by id)
+* `/color/product/:id`(Get color product by id)
+* `/rating/:id`(Get rating by id)
+* `/manage/category/:id`(Get category by id)
+* `/image/product/:id`(Get image product by id)
 
 **4. PATCH**
 
-* `/items/{id}`(Update item partially by ID) 
+* `/manage/product/:id`(Get product by id)
+* `/color/product/:id`(Get color product by id)
+* `/rating/:id`(Get rating by id)
+* `/manage/category/:id`(Get category by id)
+* `/image/product/:id`(Get image product by id) 
 
 **5. DELETE**
 
-* `/items/{id}`(Delete item by ID) 
+* `/manage/product/:id`(Get product by id)
+* `/color/product/:id`(Get color product by id)
+* `/rating/:id`(Get rating by id)
+* `/manage/category/:id`(Get category by id)
+* `/image/product/:id`(Get image product by id)
