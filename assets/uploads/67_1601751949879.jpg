@@ -1,0 +1,32 @@
+#Simple Calculator Challenge!
+#Author: timosmjntk
+#supports all python's basic operation signs.
+print("*" *114)
+for i in range(2):
+    for a in range(2):
+            print(*"Simple Calculator ", end="")
+    print("Author: timosmjntk")
+    print()
+print ("="*86)
+#Inputs:num1,operation,num2.
+num1 = float(input())
+operation = input("Operation sign: ")
+print(operation)
+num2 = float(input())
+#Conditions.
+if operation == "+":
+    print(num1 + num2)
+elif operation == "-":
+    print(num1 - num2)
+elif operation == "*":
+    print (num1 * num2)
+elif operation == "/":
+    print (num1 / num2)
+elif operation == "//":
+    print(num1 // num2)
+elif operation == "%":
+    print(num1 % num2)
+    
+#Unsopported operations.
+else:
+    print("Operasi Salah!")
