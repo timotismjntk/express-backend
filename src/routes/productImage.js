@@ -8,14 +8,7 @@ const {
     deleteProductImage
 } = require('../controllers/productImageController')
 
-const uploadHelper = require('../helpers/upload')
-const multer = require('multer')
-const responseStandard = require('../helpers/response')
-
-const upload = multer().single('picture')
-
 const authMiddleware = require('../middleware/auth')
-const multerHandler = require('../middleware/multerError')
 
 // authMiddleware.authRole()  adalah cara untuk membatasi jika bukan admin maka tidak akan bisa mengakses route manages role
 

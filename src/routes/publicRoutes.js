@@ -2,7 +2,8 @@ const { Router } = require('express')
 const {
   read,
   getProductId,
-  getDetailProduct
+  getDetailProduct,
+  popularProduct
 } = require('../controllers/productController')
 
 const {
@@ -25,6 +26,7 @@ const router = Router()
 
 router.get('/', read)
 router.get('/product/new/', readNew)
+router.get('/product/popular', popularProduct)
 router.get('/product/category', readCategory)
 router.get('/product/category/:id', getCategoryId)
 router.get('/:id', getProductId)
