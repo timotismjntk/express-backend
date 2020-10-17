@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 16, 2020 at 11:20 PM
+-- Generation Time: Oct 17, 2020 at 10:38 PM
 -- Server version: 10.4.14-MariaDB
 -- PHP Version: 7.4.10
 
@@ -49,7 +49,9 @@ INSERT INTO `address` (`id`, `user_id`, `place`, `recipient_name`, `recipient_nu
 (1, 62, 'Rumah', 'TImo', '1234567890', 'Jalan irigasi persada baru bekasi', '17112', 'Kota Bekasi', 0, '2020-10-02 09:06:31', '2020-10-02 09:13:42'),
 (2, 67, 'Office', 'Bos', '1234567890', 'Jalan irigasi persada baru bekasi', '17112', 'Kota Bekasi', 0, '2020-10-02 16:30:21', '2020-10-02 16:30:48'),
 (3, 67, 'Rumah', 'Sandra', '1234567890', 'Jalan irigasi persada baru bekasi', '17112', 'Kota Bekasi', 0, '2020-10-14 05:39:36', '2020-10-14 05:39:36'),
-(4, 67, 'Kantor', 'Andro', '1234567890', 'Jalan irigasi persada baru bekasi', '17112', 'Kota Bekasi', 1, '2020-10-14 05:52:23', '2020-10-14 05:52:23');
+(4, 67, 'Kantor', 'Andro', '1234567890', 'Jalan irigasi persada baru bekasi', '17112', 'Kota Bekasi', 1, '2020-10-14 05:52:23', '2020-10-14 05:52:23'),
+(5, 67, 'kantor', 'supriyadi', '12345', 'Jalan cemara', '12345', 'medan', 0, '2020-10-17 10:49:25', '2020-10-17 10:49:25'),
+(6, 67, 'kantor', 'supriyadi', '12345', 'Jalan cemara', '12345', 'medan', 0, '2020-10-17 10:52:00', '2020-10-17 10:52:00');
 
 -- --------------------------------------------------------
 
@@ -64,6 +66,15 @@ CREATE TABLE `cart` (
   `quantity` int(11) NOT NULL,
   `summary` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `cart`
+--
+
+INSERT INTO `cart` (`id`, `user_id`, `product_id`, `quantity`, `summary`) VALUES
+(164, 67, 55, 1, 11000000),
+(165, 67, 69, 1, 45000),
+(167, 67, 52, 1, 45000);
 
 -- --------------------------------------------------------
 
@@ -313,27 +324,27 @@ CREATE TABLE `product_image` (
 --
 
 INSERT INTO `product_image` (`id`, `product_id`, `url`, `created_at`, `updated_at`) VALUES
-(165, 36, 'http://localhost:8080/uploads/63_1601559816275.jpg', '2020-10-01 20:43:36', '2020-10-01 20:43:36'),
-(166, 37, 'http://localhost:8080/uploads/63_1601559842243.jpg', '2020-10-01 20:44:02', '2020-10-01 20:44:02'),
-(167, 38, 'http://localhost:8080/uploads/63_1601559859159.jpg', '2020-10-01 20:44:19', '2020-10-01 20:44:19'),
-(169, 40, 'http://localhost:8080/uploads/63_1601559892530.jpg', '2020-10-01 20:44:52', '2020-10-01 20:44:52'),
-(170, 41, 'http://localhost:8080/uploads/63_1601559909824.jpg', '2020-10-01 20:45:09', '2020-10-01 20:45:09'),
-(171, 42, 'http://localhost:8080/uploads/63_1601559933899.jpg', '2020-10-01 20:45:33', '2020-10-01 20:45:33'),
-(172, 43, 'http://localhost:8080/uploads/63_1601559948716.jpg', '2020-10-01 20:45:48', '2020-10-01 20:45:48'),
-(173, 47, 'http://localhost:8080/uploads/63_1601559959358.jpg', '2020-10-01 20:45:59', '2020-10-01 20:45:59'),
-(174, 50, 'http://localhost:8080/uploads/63_1601559976554.jpg', '2020-10-01 20:46:16', '2020-10-01 20:46:16'),
-(175, 51, 'http://localhost:8080/uploads/63_1601560006420.jpg', '2020-10-01 20:46:46', '2020-10-01 20:46:46'),
-(176, 52, 'http://localhost:8080/uploads/63_1601560018456.jpg', '2020-10-01 20:46:58', '2020-10-01 20:46:58'),
-(177, 53, 'http://localhost:8080/uploads/63_1601560030949.jpg', '2020-10-01 20:47:10', '2020-10-01 20:47:10'),
-(178, 54, 'http://localhost:8080/uploads/63_1601560052316.jpg', '2020-10-01 20:47:32', '2020-10-01 20:47:32'),
-(412, 32, 'http://localhost:8080/uploads/67_1602017859083.jpg', '2020-10-07 03:57:39', '2020-10-07 03:57:39'),
-(413, 33, 'http://localhost:8080/uploads/67_1602017896235.jpg', '2020-10-07 03:58:16', '2020-10-07 03:58:16'),
-(414, 34, 'http://localhost:8080/uploads/67_1602017913608.jpg', '2020-10-07 03:58:33', '2020-10-07 03:58:33'),
-(415, 35, 'http://localhost:8080/uploads/67_1602018262215.jpg', '2020-10-07 04:04:22', '2020-10-07 04:04:22'),
-(416, 39, 'http://localhost:8080/uploads/67_1602018312873.jpg', '2020-10-07 04:05:12', '2020-10-07 04:05:12'),
-(417, 59, 'http://localhost:8080/uploads/67_1602018391602.jpg', '2020-10-07 04:06:31', '2020-10-07 04:06:31'),
-(418, 69, 'http://localhost:8080/uploads/67_1602368062912.jpg', '2020-10-11 05:14:22', '2020-10-11 05:14:22'),
-(422, 55, 'http://localhost:8080/uploads/67_1602453172142.jpg', '2020-10-12 04:52:52', '2020-10-12 04:52:52');
+(165, 36, 'uploads/63_1601559816275.jpg', '2020-10-01 20:43:36', '2020-10-18 02:55:14'),
+(166, 37, 'uploads/63_1601559842243.jpg', '2020-10-01 20:44:02', '2020-10-18 02:55:14'),
+(167, 38, 'uploads/63_1601559859159.jpg', '2020-10-01 20:44:19', '2020-10-18 02:55:14'),
+(169, 40, 'uploads/63_1601559892530.jpg', '2020-10-01 20:44:52', '2020-10-18 02:55:14'),
+(170, 41, 'uploads/63_1601559909824.jpg', '2020-10-01 20:45:09', '2020-10-18 02:55:14'),
+(171, 42, 'uploads/63_1601559933899.jpg', '2020-10-01 20:45:33', '2020-10-18 02:55:14'),
+(172, 43, 'uploads/63_1601559948716.jpg', '2020-10-01 20:45:48', '2020-10-18 02:55:14'),
+(173, 47, 'uploads/63_1601559959358.jpg', '2020-10-01 20:45:59', '2020-10-18 02:55:14'),
+(174, 50, 'uploads/63_1601559976554.jpg', '2020-10-01 20:46:16', '2020-10-18 02:55:14'),
+(175, 51, 'uploads/63_1601560006420.jpg', '2020-10-01 20:46:46', '2020-10-18 02:55:14'),
+(176, 52, 'uploads/63_1601560018456.jpg', '2020-10-01 20:46:58', '2020-10-18 02:55:14'),
+(177, 53, 'uploads/63_1601560030949.jpg', '2020-10-01 20:47:10', '2020-10-18 02:55:15'),
+(178, 54, 'uploads/63_1601560052316.jpg', '2020-10-01 20:47:32', '2020-10-18 02:55:15'),
+(412, 32, 'uploads/67_1602017859083.jpg', '2020-10-07 03:57:39', '2020-10-18 02:55:14'),
+(413, 33, 'uploads/67_1602017896235.jpg', '2020-10-07 03:58:16', '2020-10-18 02:55:14'),
+(414, 34, 'uploads/67_1602017913608.jpg', '2020-10-07 03:58:33', '2020-10-18 02:55:14'),
+(415, 35, 'uploads/67_1602018262215.jpg', '2020-10-07 04:04:22', '2020-10-18 02:55:14'),
+(416, 39, 'uploads/67_1602018312873.jpg', '2020-10-07 04:05:12', '2020-10-18 02:55:14'),
+(417, 59, 'uploads/67_1602018391602.jpg', '2020-10-07 04:06:31', '2020-10-18 02:55:15'),
+(418, 69, 'uploads/67_1602368062912.jpg', '2020-10-11 05:14:22', '2020-10-18 02:55:15'),
+(422, 55, 'uploads/67_1602453172142.jpg', '2020-10-12 04:52:52', '2020-10-18 02:55:15');
 
 -- --------------------------------------------------------
 
@@ -481,7 +492,7 @@ INSERT INTO `users` (`id`, `role_id`, `name`, `email`, `password`, `phone_number
 (64, 2, 'Seller Guna', 'guna_store@mail.com', '$2b$10$7G0KEkLxZY5kPkBel0KvUeG9tG740ChybS3f/t/m8c.9QyeQ4lfLS', '12345', NULL, '', NULL, '', 0, '2020-10-02 14:03:48', '2020-10-02 14:03:48'),
 (65, 3, 'bagus', 'bagus@mail.com', '$2b$10$G370cqTZTFtdfnonGlHVBu.zmUhxbA8Z/n8LcV4YdltX45JIk/60W', '12345', NULL, '', NULL, '', 0, '2020-10-02 14:53:12', '2020-10-02 14:53:12'),
 (66, 3, 'lus', 'lusi@mail.com', '$2b$10$Slg/erNo11I4QztqJ/LN2urrO6p6ektRGxZxaf77.ncxveEysCQki', '21', NULL, '', 'http://localhost:8080/uploads/66_1601630603481.jpg', '', 0, '2020-10-02 16:18:16', '2020-10-02 16:23:23'),
-(67, 2, 'Lusia', 'lusi_store@mail.com', '$2b$10$nIz/KApMvxGn1DimZv4WvOR7g10rjx.vjNBCFeOGKBmeigV6BlF4y', '081234567890', NULL, 'Female', 'http://localhost:8080/uploads/67_1602683866369.jpeg', '24/08/1998', 0, '2020-10-02 16:24:44', '2020-10-14 20:57:46'),
+(67, 2, 'Lusiaaa', 'lusi_store@mail.com', '$2b$10$nIz/KApMvxGn1DimZv4WvOR7g10rjx.vjNBCFeOGKBmeigV6BlF4y', '081234567890', NULL, 'Female', 'http://localhost:8080/uploads/67_1602899748155.jpeg', '24/08/1998', 0, '2020-10-02 16:24:44', '2020-10-17 08:55:48'),
 (68, 3, 'lusi', 'lusi221@mail.com', '$2b$10$1xDSXbMu8q6VAckDUYMPSuw7fNcvQDk3/TtZ3MEKBsJn7mG5SB43G', '0812', NULL, '', NULL, '', 0, '2020-10-08 08:36:18', '2020-10-08 08:36:18'),
 (69, 3, 'John Doe', 'john@mail.com', '$2b$10$53PpcYfGVo7jsO5UTRq9MubSr6GjzP0ZOLD6oofZXZvF1QEYqOPU6', '0812', NULL, '', NULL, '', 0, '2020-10-08 08:59:55', '2020-10-08 08:59:55'),
 (70, 3, 'John Doe', 'john21@mail.com', '$2b$10$gMYgwrvwNISmuEHeFLcTDOEDLiPX1TF437b1tEwCGSjSjoOB3thEO', '0812', NULL, '', NULL, '', 0, '2020-10-08 09:04:02', '2020-10-08 09:04:02'),
@@ -501,7 +512,13 @@ INSERT INTO `users` (`id`, `role_id`, `name`, `email`, `password`, `phone_number
 (84, 3, 'lia', 'lia@gmail.com', '$2b$10$WK.3FLX00moUsh/d3lL59OjwqSXyuSdURRY87YQ7WTTmNlqQW3iIq', '', NULL, '', NULL, '', NULL, '2020-10-12 10:11:38', '2020-10-12 10:11:38'),
 (85, 3, 'lisa', 'lusi@gmail.com', '$2b$10$fUCTXvDjSJTKmJEyEv7d6.VOfKnM44KaBzePdkAVpvfr4VdjkaFY2', '', NULL, '', NULL, '', NULL, '2020-10-12 11:37:53', '2020-10-12 11:37:53'),
 (86, 3, 'Timotius Simanjuntak', 'timotiussimanjuntak24@gmail.com', '$2b$10$3IDZFb.mX3TdxBJFugqGXOmFv.8KTM0oUnQXBMme42swobueQNbo.', '', NULL, '', NULL, '', NULL, '2020-10-13 04:33:45', '2020-10-13 04:33:45'),
-(87, 3, 't', 'timoti@mail.com', '$2b$10$/ljJZM77E51mCRV5564KyuFF16ESEwtRPBz0O6BjQU9MQNnCSK5sC', '', NULL, '', NULL, '', NULL, '2020-10-13 07:19:31', '2020-10-13 07:19:31');
+(87, 3, 't', 'timoti@mail.com', '$2b$10$/ljJZM77E51mCRV5564KyuFF16ESEwtRPBz0O6BjQU9MQNnCSK5sC', '', NULL, '', NULL, '', NULL, '2020-10-13 07:19:31', '2020-10-13 07:19:31'),
+(88, 3, 'timotius', 'lusi_store@mail.comaaa', '$2b$10$q2renT2hWjxJiA6b8l9oDuXNP/lePAv8lIZMM4tHnD02Sg/kFmdo.', '', NULL, NULL, NULL, NULL, NULL, '2020-10-18 00:23:44', '2020-10-18 00:23:44'),
+(89, 3, 'timotius', 'yesi@mail.com', '$2b$10$qTg.soh8l./r6Meczb2jlOcoiR1I7G7ppDeg7x/5D7qcAMUl7nge2', '', NULL, NULL, NULL, NULL, NULL, '2020-10-18 00:24:30', '2020-10-18 00:24:30'),
+(90, 3, 'timotius', '11112112121@mail.com', '$2b$10$xz15YCpbl3AX9cYJcGX8p.f8/G8qGjaPLBVVZW7ef1TxeWkBqoYx2', '', NULL, NULL, NULL, NULL, NULL, '2020-10-18 02:14:43', '2020-10-18 02:14:43'),
+(91, 3, 'timotius', 'lusi123@mail.com', '$2b$10$NJ/NKQtcGXE630HIHP1ajOsm6HhBXgcKtyxZFcibc2PSY1Plj.fvy', '', NULL, NULL, NULL, NULL, NULL, '2020-10-18 02:21:26', '2020-10-18 02:21:26'),
+(92, 3, 'timotius', '123timo@mail.com', '$2b$10$vvw4nUFOaj.S/XvH.3xFUORO.pJRLhangq/j54VCMWnYdVfdIb3A2', '', NULL, NULL, NULL, NULL, NULL, '2020-10-18 02:22:44', '2020-10-18 02:22:44'),
+(93, 3, 'timotius', 'lusi_store4545@mail.com', '$2b$10$6LXqwhPEmndAjeGymkawtu3o.0volesGyGuG23ymuFuIXZS5kn8VG', '', NULL, NULL, NULL, NULL, NULL, '2020-10-18 02:27:02', '2020-10-18 02:27:02');
 
 --
 -- Indexes for dumped tables
@@ -605,13 +622,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `address`
 --
 ALTER TABLE `address`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `cart`
 --
 ALTER TABLE `cart`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=163;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=168;
 
 --
 -- AUTO_INCREMENT for table `category`
@@ -677,7 +694,7 @@ ALTER TABLE `transaction`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=88;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=94;
 
 --
 -- Constraints for dumped tables
