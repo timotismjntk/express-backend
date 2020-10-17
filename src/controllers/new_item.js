@@ -1,4 +1,4 @@
-const qs = require('querystring')
+// const qs = require('querystring')
 
 const { getNewItemModel } = require('../models/new_item')
 
@@ -6,13 +6,13 @@ const { getNewItemModel } = require('../models/new_item')
 
 module.exports = {
   getNewItem: (req, res) => {
-    const { id } = req.params
+    const { id = 'DESC' } = req.params
     console.log(req.params)
-    getNewItemModel((err, result) => {
+    getNewItemModel(id, (err, result) => {
       if (!err) {
         res.send({
           success: true,
-          message: `Found`,
+          message: 'New Products',
           data: result
         })
       } else {

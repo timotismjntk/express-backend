@@ -1,26 +1,32 @@
 const qs = require('querystring')
-
-const { getPopularItemModel } = require('../models/popular')
-
-// const table = 'items'
+const joi = require('joi')
+const responseStandard = require('../helpers/response')
+const paging = require('../helpers/pagination')
+const popularModel = require('../models/popular')
 
 module.exports = {
-  getPopularItem: (req, res) => {
-    const { id = 'DESC' } = req.params
-    console.log(req.params)
-    getPopularItemModel(id, (err, result) => {
-      if (!err) {
-        res.send({
-          success: true,
-          message: `Found`,
-          data: result
-        })
+  read: async (req, res) => {
+    const count = await popularModel.count()
+    let { search, orderBy } = req.query
+    const page = paging(req, count)
+    let { offset=0, pageInfo } = page
+    const { limitData: limit=5 } = pageInfo
+    if (typeof search === 'object') {
+        searchKey = Object.keys(search)[0]
+        searchValue = Object.values(search)[0]
       } else {
-        res.send({
-          success: false,
-          message: 'not found!'
-        })
+        searchKey = 'name'
+        searchValue = search || ''
       }
-    })
+    if (typeof orderBy === 'object') {
+    orderByKey = Object.keys(orderBy)[0]
+    orderByValue = Object.values(orderBy)[0]
+    } else {
+    orderByKey = 'id'
+    orderByValue = orderBy || 'ASC'
+    }
+    const results = await popularModel.read([searchKey, searchValue, orderByKey, orderByValue, limit, offset])
+    console.log(results)
+    return responseStandard(res, 'List of Popular Product', {results, pageInfo})
   }
 }

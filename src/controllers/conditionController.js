@@ -15,7 +15,7 @@ module.exports = {
   },
   create: async(req, res) => {
       const schema = joi.object({
-          name: joi.string().required(),
+          condition_name: joi.string().required(),
           description: joi.string().required()
       })
 
@@ -39,7 +39,7 @@ module.exports = {
     let { id } = req.params
     id = Number(id)
     const schema = joi.object({
-      name: joi.string().required(),
+      condition_name: joi.string().required(),
       description: joi.string().required()
     })
     let { value: results, error } = schema.validate(req.body)
@@ -60,21 +60,17 @@ module.exports = {
     let { id } = req.params
     id = Number(id)
     const schema = joi.object({
-      name: joi.string(),
-      quantity: joi.number(),
-      price: joi.number(),
-      description: joi.string(),
-      condition_id: joi.number(),
-      category_id: joi.number()
+      condition_name: joi.string(),
+      description: joi.string()
     })
     let { value: results, error } = schema.validate(req.body)
     if (error) {
         return responseStandard(res, 'Error', {error: error.message}, 400, false)
     } else {
         
-    let { name, description } = results
+    let { condition_name, description } = results
         id = Number(id)
-        if (name || description){
+        if (condition_name || description){
             const update = await conditionModel.updateConditionPartial(results, id )
             if(update.affectedRows) {
                 return responseStandard(res, `Condition Has been Updated`, {})
