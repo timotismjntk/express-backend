@@ -17,27 +17,51 @@ module.exports = {
     if (error) {
         return responseStandard(res, 'Error', {error: error.message}, 400, false)
     } else {
+    
       let {product_id, quantity} = results
-      console.log(product_id)
-      const check = await cartModel.getPrice(product_id)
-      // console.log(check[0].price)
-      let Sum = check[0].price * quantity
-      console.log(Sum)
-            results = {
-              ...results,
-              user_id: id,
-              summary: Sum
-            }
-            const data = await cartModel.createCart(results)
-            if (data.affectedRows) {
+
+      const checkCartExist = await cartModel.getCartByCondition([product_id, id])
+      // console.log(checkCartExist[0].quantity)
+      // console.log(product_id)
+      
+      console.log(checkCartExist)
+      if(checkCartExist.length > 0) {
+          const check = await cartModel.getPrice(product_id)
+          console.log('sudah ada')
+          let Sum = check[0].price * quantity
                 results = {
-                    id: data.insertId,
-                    ...results
+                  quantity: quantity+checkCartExist[0].quantity,
+                  summary: Sum
                 }
-                return responseStandard(res, 'Create Cart Successfully', { results }, 200, true)
-            } else {
-                return responseStandard(res, 'Failed to create Cart', {}, 401, false)
-            }
+                console.log(id)
+          const update = await cartModel.updateCart(results, id, product_id)
+          // console.log(results)
+          if(update.affectedRows) {
+              return responseStandard(res, `Cart Has been Updated`, {})
+          } else {
+              return responseStandard(res, 'Cart Not found', {}, 401, false)
+          }
+      } else {
+        const check = await cartModel.getPrice(product_id)
+        // console.log(check[0].price)
+        let Sum = check[0].price * quantity
+        // console.log(Sum)
+              results = {
+                ...results,
+                user_id: id,
+                summary: Sum
+              }
+              const data = await cartModel.createCart(results)
+              if (data.affectedRows) {
+                  results = {
+                      id: data.insertId,
+                      ...results
+                  }
+                  return responseStandard(res, 'Create Cart Successfully', { results }, 200, true)
+              } else {
+                  return responseStandard(res, 'Failed to create Cart', {}, 401, false)
+              }
+        }
     }
   },
 
@@ -63,7 +87,7 @@ module.exports = {
               summary: Sum
             }
             console.log(id)
-      const update = await cartModel.updateCart(results, id)
+      const update = await cartModel.updateCart(results, id, product_id)
       // console.log(results)
       if(update.affectedRows) {
           return responseStandard(res, `Cart Has been Updated`, {})
@@ -76,8 +100,8 @@ module.exports = {
   updateCartPartial: async (req, res) => {
     let { id } = req.user
     const schema = joi.object({
-      product_id: joi.string().required(),
-      quantity: joi.number().required()
+      product_id: joi.string(),
+      quantity: joi.number()
     })
     let { value: results, error } = schema.validate(req.body)
     if (error) {
@@ -130,12 +154,22 @@ module.exports = {
 
   cart: async (req, res) => {
     let { id } = req.user
+    let hasil = 0
     console.log(id)
-    const readChart = await cartModel.read({user_id: id})
+    let readChart = await cartModel.read({user_id: id})
+    readChart.forEach((x=> { 
+      hasil += x.summary
+      // console.log(x.summary)
+    }))
+    let results = {
+      readChart,
+      summary: hasil
+    }
+    console.log(results)
     // console.log(readChart[0].product_id)
     // const data = await cartModel.getCartByCondition({product_id: readChart[0].product_id})
     if(readChart.length > 0) {
-        return responseStandard(res, `Cart from user with id ${id}`, {readChart})
+        return responseStandard(res, `Cart from user with id ${id}`, results)
     } else {
         return responseStandard(res, 'Cart Not found', {}, 401, false)
     }
@@ -143,24 +177,26 @@ module.exports = {
 
   deleteCart: async (req, res) => {
       let { id } = req.user
-      let productId  = Number(id)
+      let {product_id} = req.params
       // console.log(uid)
-      const data = await cartModel.deleteCart({id: productId})
+      const data = await cartModel.deleteCart(id, product_id)
       if(data.affectedRows){
-          return responseStandard(res, `Product Has been deleted`, {})
+          return responseStandard(res, `Cart Has been deleted`, {})
       } else {
-          return responseStandard(res, 'Product Not found', {}, 401, false)
+          return responseStandard(res, 'Cart Not found', {}, 401, false)
       }
     },
 
     checkout: async (req, res) => {
       let { id } = req.user
-      const readChart = await cartModel.read(id)
+      const readChart = await cartModel.read({user_id: id})
       console.log(readChart)
       var hasil = 0
       readChart.forEach((x=> { 
         hasil += x.summary
+        console.log(x.summary)
       }))
+      console.log(hasil)
 
       const makeCheckOut = await cartModel.checkOut({user_id: Number(id)})
 

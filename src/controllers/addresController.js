@@ -39,9 +39,9 @@ module.exports = {
                       id: data.insertId,
                       ...results,
                   }
-                  return responseStandard(res, 'Create Condition Successfully', { results }, 200, true)
+                  return responseStandard(res, 'Create Address Successfully', { results }, 200, true)
               } else {
-                  return responseStandard(res, 'Failed to create Condition', {}, 401, false)
+                  return responseStandard(res, 'Failed to create Address', {}, 401, false)
               }
       }
   },
@@ -64,7 +64,7 @@ module.exports = {
             ...results,
             user_id: id
           }
-      let { name, quantity, price, description, condition_id, category_id } = results
+      let { name, quantity, price, description, address_name, category_id } = results
       const update = await addressModel.updateAddress(results, id)
       // console.log(results)
       if(update.affectedRows) {
@@ -120,7 +120,7 @@ module.exports = {
   },
   getAddress: async (req, res) => {
     const { id } = req.user
-    const data = await addressModel.getAddressByCondition({ user_id: id })
+    const data = await addressModel.getAddressById({ user_id: id })
     if(data.length > 0) {
         return responseStandard(res, `Address`, {data})
     } else {
@@ -129,9 +129,9 @@ module.exports = {
 },
   deleteAddress: async (req, res) => {
       const { id } = req.params
-      let condition_id  = Number(id)
+      let Address_id  = Number(id)
       // console.log(uid)
-      const data = await addressModel.deleteAddress({id: condition_id})
+      const data = await addressModel.deleteAddress({id: Address_id})
       if(data.affectedRows){
           return responseStandard(res, `Address Has been deleted`, {})
       } else {

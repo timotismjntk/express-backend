@@ -4,7 +4,7 @@ const responseStandard = require('../helpers/response')
 const joi = require('joi')
 const bcrypt = require('bcrypt')
 
-const { APP_URL} = process.env
+const { APP_URL } = process.env
 
 module.exports = {
     read: async (req, res) => {

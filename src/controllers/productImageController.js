@@ -68,11 +68,9 @@ module.exports = {
 
         for (let i = 0; i < req.files.length; i++) {
             if(!req.files[i]) {
-                console.log('true')
                 return responseStandard(res, 'maximum allowed file size 500 KB', {}, 500, false)
             }
             if(req.files[i].fieldname !== 'picture') {
-            console.log('iya iya')
             return responseStandard(res, `file can't be more than 4`, {}, 401, false)
             }
         }
