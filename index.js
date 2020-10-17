@@ -24,11 +24,9 @@ const authMiddleware = require('./src/middleware/auth')
 const itemsRouter = require('./src/routes/items')
 const ratingRouter = require('./src/routes/rating')
 const newItemRouter = require('./src/routes/new_item')
-const userRouter = require('./src/routes/User')
+// const userRouter = require('./src/routes/User')
 const cartRouter = require('./src/routes/cart')
 const authRouter = require('./src/routes/auth')
-
-const customerRouter = require('./src/routes/customer')
 
 
 // provide static file
@@ -40,7 +38,6 @@ app.use('/items', itemsRouter)
 app.use('/new_item', newItemRouter)
 app.use('/auth', authRouter)
 // app.use('/user', userRouter)
-app.use('/customer', authMiddleware.authUser, customerRouter)
 app.use('/user/cart', authMiddleware.authUser, cartRouter)
 // app.use('/customer', authMiddleware, LoginUserRouter)
 
@@ -61,10 +58,11 @@ const imageProduct = require('./src/routes/productImage')
 const address = require('./src/routes/addressRoute')
 const publicRoute = require('./src/routes/publicRoutes.js')
 
-// Define Routes for manage
+// Define Routes for manage, admin responsible for this routes
 app.use('/manage/roles', authMiddleware.authUser, manageRoles)
 app.use('/manage/users', authMiddleware.authUser, manageUsers)
-app.use('/manage/product', manageProduct) // authMiddleware.authUser, 
+app.use('/manage/product', manageProduct) // authMiddleware.authUser,
+app.use('/manage/color', colorProduct) 
 app.use('/manage/condition', manageCondition)
 app.use('/manage/category', manageCategory)
 app.use('/manage/image', imageProduct)
@@ -73,9 +71,14 @@ app.use('/manage/rating', ratingRouter)
 // app.use('/product/detail:id', manageProduct.getProductDetail)
 app.use('/users/address', authMiddleware.authUser, address)
 
+
+//routes for customer who have account
+const customerRouter = require('./src/routes/customer')
+app.use('/profile', authMiddleware.authUser, customerRouter)
+
 // public routes
 app.use('/public', publicRoute)
-app.use('/publics/popular', popularProduct)
+app.use('/public/popular', popularProduct)
 
 // Error 404 Pages
 app.get('*', (req, res) => {
