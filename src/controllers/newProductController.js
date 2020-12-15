@@ -2,7 +2,7 @@ const qs = require('querystring')
 const joi = require('joi')
 const responseStandard = require('../helpers/response')
 const paging = require('../helpers/pagination')
-const NewProductModel = require('../models/NewProductModel')
+const NewProductModel = require('../models/newProductModel')
 
 module.exports = {
   readNew: async (req, res) => {
