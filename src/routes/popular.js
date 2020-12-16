@@ -1,8 +1,8 @@
 const { Router } = require('express')
-const { read } = require('../controllers/popular')
+const { readPopular } = require('../controllers/popular')
 
 const router = Router()
 
-router.get('/', read)
+router.get('/', readPopular)
 
 module.exports = router
