@@ -7,7 +7,7 @@ const popularModel = require('../models/popular')
 module.exports = {
   read: async (req, res) => {
     const count = await popularModel.count()
-    let { limit, page, search, sort } = req.query
+    let { limit, page, search, sort, orderBy } = req.query
     if (!limit) {
       limit = 5
     } else {

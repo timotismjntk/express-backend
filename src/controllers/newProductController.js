@@ -7,7 +7,7 @@ const NewProductModel = require('../models/newProductModel')
 module.exports = {
   readNew: async (req, res) => {
     const count = await NewProductModel.countNewProduct()
-    let { limit, page, search, sort } = req.query
+    let { limit, page, search, sort, orderBy } = req.query
     if (!limit) {
       limit = 5
     } else {
