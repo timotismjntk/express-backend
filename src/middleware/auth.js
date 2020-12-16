@@ -1,5 +1,4 @@
 const qs = require('querystring')
-const User = require('../models/user')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const responseStandard = require('../helpers/response')
