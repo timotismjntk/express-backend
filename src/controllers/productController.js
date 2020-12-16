@@ -184,7 +184,7 @@ module.exports = {
     const offset = (page - 1) * limit
     const query = [searchKey, searchValue, orderByKey, orderByValue, limit, offset]
     const data = await productModel.getNewProduct(query)
-    const pageInfo = pagination('public/product/popular', req.query, page, limit, count)
+    const pageInfo = pagination('public/product/new', req.query, page, limit, count)
     if(data.length > 0) {
         return responseStandard(res, `New Product`, {data, pageInfo})
     } else {
