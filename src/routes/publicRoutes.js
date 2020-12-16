@@ -10,7 +10,7 @@ const {
     readNew
 } = require('../controllers/newProductController')
 
-const readPopular = require('../controllers/popular/read')
+const {readPopular} = require('../controllers/popular')
 
 const {
     readCategory,

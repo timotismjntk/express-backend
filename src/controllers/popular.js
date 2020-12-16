@@ -5,7 +5,7 @@ const { pagination } = require('../helpers/pagination')
 const popularModel = require('../models/popular')
 
 module.exports = {
-  read: async (req, res) => {
+  readPopular: async (req, res) => {
     const count = await popularModel.count()
     let { limit, page, search, sort, orderBy } = req.query
     if (!limit) {
