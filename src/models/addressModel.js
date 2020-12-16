@@ -13,9 +13,9 @@ const table = 'address'
 */
 
 module.exports = {
-    readAddress: (data = [5, 0]) => {
+    readAddress: (data) => {
         return new Promise((resolve, reject) =>{
-            db.query(`SELECT * FROM ${table} LIMIT ? OFFSET ?`, data, (err, result, _fields) => {
+            db.query(`SELECT * FROM ${table} WHERE user_id ? LIMIT ? OFFSET ?`, data, (err, result, _fields) => {
                 console.log(data)
                 if(err) {
                     reject(err);

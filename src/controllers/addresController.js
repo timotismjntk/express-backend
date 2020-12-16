@@ -1,16 +1,27 @@
 const joi = require('joi')
 const responseStandard = require('../helpers/response')
-const paging = require('../helpers/pagination')
+const { pagination } = require('../helpers/pagination')
 const addressModel = require('../models/addressModel')
 
 module.exports = {
   read: async (req, res) => {
-      let {id} = req.user
+    let {id} = req.user
     const count = await addressModel.countAddress()
-    const page = paging(req, count)
-    const { offset, pageInfo } = page
-    const { limitData: limit } = pageInfo
-    const results = await addressModel.readAddress([limit, offset])
+    let { limit, page } = req.query
+    if (!limit) {
+      limit = 5
+    } else {
+      limit = parseInt(limit)
+    }
+    if (!page) {
+      page = 1
+    } else {
+      page = parseInt(page)
+    }
+    const offset = (page - 1) * limit
+    const data = [id, limit, offset]
+    const results = await addressModel.readAddress(data)
+    const pageInfo = pagination(req.baseUrl, req.query, page, limit, count)
     return responseStandard(res, 'Showing Address', {results, pageInfo})
   },
   create: async(req, res) => {

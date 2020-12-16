@@ -1,33 +1,44 @@
 const qs = require('querystring')
 const joi = require('joi')
 const responseStandard = require('../helpers/response')
-const paging = require('../helpers/pagination')
+const { pagination } = require('../helpers/pagination')
 const productModel = require('../models/productModel')
 
 module.exports = {
 
   read: async (req, res) => {
     const count = await productModel.countProduct()
-    let { search, orderBy } = req.query
-    const page = paging(req, count)
-    let { offset=0, pageInfo } = page
-    const { limitData: limit=5 } = pageInfo
-    if (typeof search === 'object') {
-        searchKey = Object.keys(search)[0]
-        searchValue = Object.values(search)[0]
-      } else {
-        searchKey = 'name'
-        searchValue = search || ''
-      }
-    if (typeof orderBy === 'object') {
-    orderByKey = Object.keys(orderBy)[0]
-    orderByValue = Object.values(orderBy)[0]
+    let { limit, page, search, sort } = req.query
+    if (!limit) {
+      limit = 5
     } else {
-    orderByKey = 'id'
-    orderByValue = orderBy || 'ASC'
+      limit = parseInt(limit)
     }
-    const results = await productModel.readProduct([searchKey, searchValue, orderByKey, orderByValue, limit, offset])
-    console.log(results)
+    if (!page) {
+      page = 1
+    } else {
+      page = parseInt(page)
+    }
+    let searchValue = ''
+    let sortValue = ''
+    if (typeof search === 'object') {
+      searchKey = Object.keys(search)[0]
+      searchValue = Object.values(search)[0]
+    } else {
+      searchKey = 'name'
+      searchValue = search || ''
+    }
+  if (typeof orderBy === 'object') {
+  orderByKey = Object.keys(orderBy)[0]
+  orderByValue = Object.values(orderBy)[0]
+  } else {
+  orderByKey = 'id'
+  orderByValue = orderBy || 'ASC'
+  }
+    const offset = (page - 1) * limit
+    const data = [searchKey, searchValue, orderByKey, orderByValue, limit, offset]
+    const results = await productModel.readProduct(data)
+    const pageInfo = pagination(req.baseUrl, req.query, page, limit, count)
     return responseStandard(res, 'List of Product', {results, pageInfo})
   },
 

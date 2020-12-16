@@ -1,16 +1,23 @@
 const qs = require('querystring')
 const joi = require('joi')
 const responseStandard = require('../helpers/response')
-const paging = require('../helpers/pagination')
+const { pagination } = require('../helpers/pagination')
 const popularModel = require('../models/popular')
 
 module.exports = {
   read: async (req, res) => {
     const count = await popularModel.count()
-    let { search, orderBy } = req.query
-    const page = paging(req, count)
-    let { offset=0, pageInfo } = page
-    const { limitData: limit=5 } = pageInfo
+    let { limit, page, search, sort } = req.query
+    if (!limit) {
+      limit = 5
+    } else {
+      limit = parseInt(limit)
+    }
+    if (!page) {
+      page = 1
+    } else {
+      page = parseInt(page)
+    }
     if (typeof search === 'object') {
         searchKey = Object.keys(search)[0]
         searchValue = Object.values(search)[0]
@@ -25,8 +32,10 @@ module.exports = {
     orderByKey = 'id'
     orderByValue = orderBy || 'ASC'
     }
-    const results = await popularModel.read([searchKey, searchValue, orderByKey, orderByValue, limit, offset])
-    console.log(results)
+    const offset = (page - 1) * limit
+    const data = [searchKey, searchValue, orderByKey, orderByValue, limit, offset]
+    const results = await popularModel.read(data)
+    const pageInfo = pagination(req.baseUrl, req.query, page, limit, count)
     return responseStandard(res, 'List of Popular Product', {results, pageInfo})
   }
 }
