@@ -35,7 +35,7 @@ module.exports = {
     const offset = (page - 1) * limit
     const data = [searchKey, searchValue, orderByKey, orderByValue, limit, offset]
     const results = await popularModel.read(data)
-    const pageInfo = pagination(req.baseUrl, req.query, page, limit, count)
+    const pageInfo = pagination('public/product/popular', req.query, page, limit, count)
     return responseStandard(res, 'List of Popular Product', {results, pageInfo})
   }
 }

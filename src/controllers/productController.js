@@ -38,7 +38,7 @@ module.exports = {
     const offset = (page - 1) * limit
     const data = [searchKey, searchValue, orderByKey, orderByValue, limit, offset]
     const results = await productModel.readProduct(data)
-    const pageInfo = pagination(req.baseUrl, req.query, page, limit, count)
+    const pageInfo = pagination('public', req.query, page, limit, count)
     return responseStandard(res, 'List of Product', {results, pageInfo})
   },
 
