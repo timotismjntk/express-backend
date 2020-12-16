@@ -167,9 +167,6 @@ module.exports = {
     }
     let searchValue = ''
     let sortValue = ''
-    const page = paging(req, count)
-    let { offset=0, pageInfo } = page
-    const { limitData: limit=5 } = pageInfo
     if (typeof search === 'object') {
         searchKey = Object.keys(search)[0]
         searchValue = Object.values(search)[0]
@@ -208,10 +205,17 @@ module.exports = {
     },
     popularProduct: async (req, res) => {
       const count = await productModel.countProduct()
-      let { search, orderBy } = req.query
-      const page = paging(req, count)
-      let { offset=0, pageInfo } = page
-      const { limitData: limit } = pageInfo
+      let { limit, page, search, sort, orderBy } = req.query
+      if (!limit) {
+        limit = 5
+      } else {
+        limit = parseInt(limit)
+      }
+      if (!page) {
+        page = 1
+      } else {
+        page = parseInt(page)
+      }
       if (typeof search === 'object') {
           searchKey = Object.keys(search)[0]
           searchValue = Object.values(search)[0]
@@ -226,9 +230,10 @@ module.exports = {
       orderByKey = 'rating.id'
       orderByValue = orderBy || 'DESC'
       }
-      console.log(count)
-      const results = await productModel.readPopularProduct([searchKey, searchValue, orderByKey, orderByValue, limit, offset])
-      // console.log(results)
+      const offset = (page - 1) * limit
+      const query = [searchKey, searchValue, orderByKey, orderByValue, limit, offset]
+      const results = await productModel.readPopularProduct(query)
+      const pageInfo = pagination('public/product/popular', req.query, page, limit, count)
       return responseStandard(res, 'List of Product', {results, pageInfo})
     }
 }
