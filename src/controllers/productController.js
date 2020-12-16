@@ -154,8 +154,19 @@ module.exports = {
   ,
   getNewProduct: async (req, res) => {
     const count = await productModel.countProduct()
-    let { id } = req.params
-    let { search, orderBy } = req.query
+    let { limit, page, search, sort, orderBy } = req.query
+    if (!limit) {
+      limit = 5
+    } else {
+      limit = parseInt(limit)
+    }
+    if (!page) {
+      page = 1
+    } else {
+      page = parseInt(page)
+    }
+    let searchValue = ''
+    let sortValue = ''
     const page = paging(req, count)
     let { offset=0, pageInfo } = page
     const { limitData: limit=5 } = pageInfo
@@ -173,11 +184,12 @@ module.exports = {
     orderByKey = 'id'
     orderByValue = orderBy || 'ASC'
     }
-    id = Number(id)
-    const data = await productModel.getNewProduct([searchKey, searchValue, orderByKey, orderByValue, limit, offset])
-    console.log(data)
+    const offset = (page - 1) * limit
+    const query = [searchKey, searchValue, orderByKey, orderByValue, limit, offset]
+    const data = await productModel.getNewProduct(query)
+    const pageInfo = pagination('public/product/popular', req.query, page, limit, count)
     if(data.length > 0) {
-        return responseStandard(res, `New Product with Id ${id}`, {data})
+        return responseStandard(res, `New Product`, {data, pageInfo})
     } else {
         return responseStandard(res, 'New Product Not found', {}, 401, false)
     }
