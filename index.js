@@ -62,7 +62,7 @@ const publicRoute = require('./src/routes/publicRoutes.js')
 app.use('/manage/roles', authMiddleware.authUser, manageRoles)
 app.use('/manage/users', authMiddleware.authUser, manageUsers)
 app.use('/manage/product', manageProduct) // authMiddleware.authUser,
-app.use('/manage/color', colorProduct) 
+app.use('/manage/color', colorProduct)
 app.use('/manage/condition', manageCondition)
 app.use('/manage/category', manageCategory)
 app.use('/manage/image', imageProduct)

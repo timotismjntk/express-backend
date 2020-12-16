@@ -10,6 +10,8 @@ const {
     readNew
 } = require('../controllers/newProductController')
 
+const readPopular = require('../controllers/popular/read')
+
 const {
     readCategory,
     getCategoryId
@@ -26,7 +28,7 @@ const router = Router()
 
 router.get('/', read)
 router.get('/product/new/', readNew)
-router.get('/product/popular', popularProduct)
+router.get('/product/popular', readPopular)
 router.get('/product/category', readCategory)
 router.get('/product/category/:id', getCategoryId)
 router.get('/:id', getProductId)
