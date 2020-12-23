@@ -1,5 +1,5 @@
 const { Router } = require('express')
-const { getCategory, getDetailCategory, createCategory, updateCategory, updatePartialCategory, deleteCategory } = require('../controllers/category')
+const { getCategory, getDetailCategory, createCategory, updateCategory, updatePartialCategory, deleteCategory } = require('../../controllers/category')
 
 const router = Router()
 

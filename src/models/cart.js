@@ -13,125 +13,155 @@ const table = 'cart'
 */
 
 module.exports = {
-    read: (data={}) => {
-      return new Promise((resolve, reject) =>{
-        db.query(`SELECT cart.id, cart.product_id, product.name, SUM(cart.quantity) AS quantity, SUM(price*cart.quantity) AS price, product_image.url, cart.summary FROM cart INNER JOIN product ON cart.product_id = product.id INNER JOIN product_image ON product.id = product_image.product_id WHERE cart. ? GROUP BY cart.product_id`, data, (err, result, _fields) => {
-          if(err) {
-            reject(err);
-          }else {
-              resolve(result);
-          }
-        })
-      })
-    },
-    sumProduct: () => {
-        return new Promise((resolve, reject) =>{
-            db.query(`SELECT SUM(quantity) FROM ${table}`, (err, result, _fields) =>{
-                if(err) {
-                    reject(err);
-                }else {
-                    resolve(result);
-                }
-            })
-        }
-        )
-    },
-    getPrice: (data={}) =>{
-      return new Promise((resolve, reject) =>{
-        console.log(data)
-        db.query(`SELECT product.price AS price FROM product
-        WHERE id=${data}`, (err, result, _fields)=> {
-          if(err) {
-            reject(err);
-          }else {
-              resolve(result)
-          }
-        })
-      })
-    },
-    getCartByCondition: (data) =>{
-        console.log(data)
-        return new Promise((resolve, reject) =>{
-            db.query(`SELECT cart.id, cart.product_id, product.name, SUM(cart.quantity) AS quantity, SUM(price*cart.quantity) AS price, product_image.url, cart.summary FROM cart INNER JOIN product ON cart.product_id = product.id INNER JOIN product_image ON product.id = product_image.product_id WHERE cart.product_id=${data[0]} AND cart.user_id=${data[1]} GROUP BY cart.product_id`, (err, result, _fields)=>{
-                console.log(data)
-                if(err) {
-                    reject(err);
-                }else {
-                    resolve(result)
-                }
-            })
-        })
-    },
-    createCart: (data={}) => {
-        return new Promise((resolve, reject) =>{
-            console.log(data)
-            db.query(`INSERT INTO ${table} SET ?`, data, (err, result, _fields)=> {
-                if(err) {
-                    reject(err);
-                }else {
-                    resolve(result)
-                }
-            })
-        })
-    },
-    updateCart: (data={}, id, product_id) => {
-        return new Promise((resolve, reject) =>{
-          console.log(data)
-            db.query(`UPDATE ${table} SET ? WHERE user_id = ${id} AND product_id=${product_id}`, data, (err, result, _fields)=>{
-                if(err) {
-                    reject(err)
-                }else {
-                    resolve(result)
-                }
-            })
-        })
-    },
-    updateCartPartial: (data={}, id, product_id) => {
-        return new Promise((resolve, reject) =>{
-            db.query(`UPDATE ${table} SET ? WHERE id = ${id} AND product_id=`, data, (err, result, _fields)=>{
-                if(err) {
-                    reject(err)
-                }else {
-                    resolve(result)
-                }
-            })
-        })
-    },
-    deleteCart: (data1, data2) => {
-        return new Promise((resolve, reject) =>{
-            console.log(data2)
-            console.log(data1)
-            db.query(`DELETE FROM ${table} WHERE cart.user_id=${data1} and cart.id=${data2}`, (err, result, _fields)=> {
-                if(err) {
-                    reject(err)
-                }else {
-                    resolve(result)
-                }
-            })
-        })
-    },
-      showCart: () => {
-        return new Promise((resolve, reject) =>{
-          db.query(`SELECT * FROM ${table}`, (err, result, _fields)=> {
-              if(err) {
-                  reject(err)
-              }else {
-                  resolve(result)
-              }
+  read: (data = {}) => {
+    return new Promise((resolve, reject) => {
+      db.query('SELECT cart.id, cart.product_id, product.name, SUM(cart.quantity) AS quantity, product.price, product_image.url, SUM(price*cart.quantity) AS summary FROM cart INNER JOIN product ON cart.product_id = product.id INNER JOIN product_image ON product.id = product_image.product_id WHERE cart. ? GROUP BY cart.product_id ORDER BY cart.id DESC', data, (err, result, _fields) => {
+        if (err) {
+          db.rollback(() => {
+            reject(err)
           })
+        } else {
+          resolve(result)
+        }
       })
-    },
-    checkOut: (data={}) => {
-      console.log(data)
-      return new Promise((resolve, reject) =>{
-        db.query(`SELECT product.name, cart.quantity, product.price, product_image.url, cart.summary FROM cart INNER JOIN product ON cart.product_id = product.id INNER JOIN product_image ON product.id = product_image.product_id WHERE ?`, data, (err, result, _fields) => {
-          // console.log(data)
-          if(err) {
-            reject(err);
-          }else {
-              resolve(result);
-          }
-        })
+    })
+  },
+  sumProduct: () => {
+    return new Promise((resolve, reject) => {
+      db.query(`SELECT SUM(quantity) FROM ${table}`, (err, result, _fields) => {
+        if (err) {
+          db.rollback(() => {
+            reject(err)
+          })
+        } else {
+          resolve(result)
+        }
       })
     }
+    )
+  },
+  getPrice: (data = {}) => {
+    return new Promise((resolve, reject) => {
+      console.log(data)
+      db.query(`SELECT product.price AS price FROM product
+        WHERE id=${data}`, (err, result, _fields) => {
+        if (err) {
+          db.rollback(() => {
+            reject(err)
+          })
+        } else {
+          resolve(result)
+        }
+      })
+    })
+  },
+  getCartByCondition: (data) => {
+    return new Promise((resolve, reject) => {
+      db.query(`SELECT cart.id, cart.product_id, product.name, SUM(cart.quantity) AS quantity, SUM(product.price*cart.quantity) AS price, product_image.url, cart.summary FROM cart INNER JOIN product ON cart.product_id = product.id INNER JOIN product_image ON product.id = product_image.product_id WHERE cart.product_id=${data[0]} AND cart.user_id=${data[1]} GROUP BY cart.product_id`, (err, result, _fields) => {
+        console.log(data)
+        if (err) {
+          db.rollback(() => {
+            reject(err)
+          })
+        } else {
+          resolve(result)
+        }
+      })
+    })
+  },
+  createCart: (data = {}) => {
+    return new Promise((resolve, reject) => {
+      console.log(data)
+      db.query(`INSERT INTO ${table} SET ?`, data, (err, result, _fields) => {
+        if (err) {
+          db.rollback(() => {
+            reject(err)
+          })
+        } else {
+          resolve(result)
+        }
+      })
+    })
+  },
+  updateCart: (data = {}, id, product_id) => {
+    return new Promise((resolve, reject) => {
+      console.log(data)
+      db.query(`UPDATE ${table} SET ? WHERE user_id = ${id} AND product_id=${product_id}`, data, (err, result, _fields) => {
+        if (err) {
+          db.rollback(() => {
+            reject(err)
+          })
+        } else {
+          resolve(result)
+        }
+      })
+    })
+  },
+  updateCartPartial: (data = {}, id, product_id) => {
+    return new Promise((resolve, reject) => {
+      db.query(`UPDATE ${table} SET ? WHERE id = ${id} AND product_id=`, data, (err, result, _fields) => {
+        if (err) {
+          db.rollback(() => {
+            reject(err)
+          })
+        } else {
+          resolve(result)
+        }
+      })
+    })
+  },
+  deleteCart: (data1, data2) => {
+    return new Promise((resolve, reject) => {
+      db.query(`DELETE FROM ${table} WHERE cart.user_id=${data1} and cart.id=${data2}`, (err, result, _fields) => {
+        if (err) {
+          db.rollback(() => {
+            reject(err)
+          })
+        } else {
+          resolve(result)
+        }
+      })
+    })
+  },
+  deleteAllCart: (data) => {
+    return new Promise((resolve, reject) => {
+      db.query(`DELETE FROM ${table} WHERE cart.user_id=${data}`, (err, result, _fields) => {
+        if (err) {
+          db.rollback(() => {
+            reject(err)
+          })
+        } else {
+          resolve(result)
+        }
+      })
+    })
+  },
+  showCart: () => {
+    return new Promise((resolve, reject) => {
+      db.query(`SELECT * FROM ${table}`, (err, result, _fields) => {
+        if (err) {
+          db.rollback(() => {
+            reject(err)
+          })
+        } else {
+          resolve(result)
+        }
+      })
+    })
+  },
+  checkOut: (data = {}) => {
+    console.log(data)
+    return new Promise((resolve, reject) => {
+      db.query('SELECT cart.id, cart.product_id, product.name, SUM(cart.quantity) AS quantity, product.price, product_image.url, SUM(price*cart.quantity) AS summary FROM cart INNER JOIN product ON cart.product_id = product.id INNER JOIN product_image ON product.id = product_image.product_id WHERE cart. ? GROUP BY cart.product_id', data, (err, result, _fields) => {
+        // console.log(data)
+        if (err) {
+          db.rollback(() => {
+            reject(err)
+          })
+        } else {
+          resolve(result)
+        }
+      })
+    })
+  }
 }

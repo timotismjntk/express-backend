@@ -2,7 +2,7 @@ const db = require('../helpers/db')
 const table = 'category'
 
 module.exports = {
-    getDetailCategoryModel: (id, cb) => {
+  getDetailCategoryModel: (id, cb) => {
     db.query(`SELECT product.id, product.name, product.price, product.store, category.category_name FROM product INNER JOIN category ON product.category_id=category.category_id WHERE product.category_id=${id}`, (err, result, _fields) => {
       cb(err, result)
     })
