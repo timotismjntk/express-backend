@@ -4,7 +4,7 @@ const table = 'orders'
 module.exports = {
   read: (data = {}) => {
     return new Promise((resolve, reject) => {
-      db.query(`SELECT * FROM ${table} WHERE ? ORDER BY created_at DESC`, data, (err, result, _fields) => {
+      db.query(`SELECT * FROM ${table} WHERE ? ORDER BY id DESC`, data, (err, result, _fields) => {
         if (err) {
           reject(err)
         } else {
