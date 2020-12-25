@@ -36,7 +36,7 @@ module.exports = {
       INNER JOIN orders ON transactions.order_id = orders.id
       INNER JOIN product ON transactions.product_id = product.id
       INNER JOIN product_image ON product.id = product_image.product_id
-      WHERE ORDERS.userId = ${data[0]} AND ORDERS.id = ${data[1]}`,
+      WHERE orders.userId = ${data[0]} AND orders.id = ${data[1]}`,
       (err, result, _fields) => {
         if (err) {
           reject(err)
